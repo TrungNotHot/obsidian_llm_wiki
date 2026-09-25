@@ -1,0 +1,227 @@
+{
+  "main": {
+    "id": "6bc9bbfc09138a3c",
+    "type": "split",
+    "children": [
+      {
+        "id": "9124fdd2ddf7c8a3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "85afdc77220cc8f6",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "aa0db9d07f549184",
+    "type": "split",
+    "children": [
+      {
+        "id": "fa1793b9de45f44d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3ba7a3fd2a2633dd",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "42c5f458cc0ec96b",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "ea67581026a65bae",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "ea0d62d8bfa73706",
+    "type": "split",
+    "children": [
+      {
+        "id": "3c6e746d3b25682d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "908a9850d223e153",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "830a5a5c2605ad3a",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "075b7c8c8e1068d8",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "be414a4b3ed78b3a",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "5c0e5e74e84e5ba1",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "85afdc77220cc8f6",
+  "lastOpenFiles": [
+    "wiki/easy_read/logging/logging-traffic-cop-design.md",
+    "wiki/easy_read/logging/dag_test_all_connections.md",
+    "SCHEMA.md",
+    "wiki/easy_read/dwh/dag_dwh_dim_location.md",
+    "wiki/easy_read/intermediate/dag_intermediate_discover_entities.md",
+    "wiki/easy_read/intermediate/dag_intermediate_alps.md",
+    "wiki/easy_read/dwh/dag_dwh_fact_alps.md",
+    "wiki/easy_read/dwh/dag_dwh_dim_legal.md",
+    "wiki/easy_read/dwh/dag_dwh_dim_employee.md",
+    "wiki/easy_read/dwh/dag_dwh_dim_division.md",
+    "wiki/easy_read/dwh/dag_dwh_conformed_dimensions.md",
+    "wiki/concepts/watermark_incremental_sync.md",
+    "wiki/concepts/traffic_cop_logging.md",
+    "wiki/concepts/surrogate_keys_and_unknown_handling.md",
+    "wiki/concepts/airflow_asset_data_driven_scheduling.md",
+    "wiki/concepts/append_on_change_xxhash64.md",
+    "wiki/concepts/entity_resolution_and_mapping.md",
+    "wiki/concepts/etl_utility_framework.md",
+    "wiki/concepts/kimball_dimensional_modeling.md",
+    "index.md",
+    "2026-09-23.md",
+    "reports/2026-09-23-hr-scorecard-architecture-synthesis.md",
+    "reports/README.md",
+    "wiki/easy_read/README.md",
+    "log.md",
+    "Untitled.base",
+    "raw/README.md",
+    "Untitled 1.canvas",
+    "Untitled.canvas",
+    "wiki/architecture/dwh/star_schema_diagram.drawio",
+    "wiki/architecture/staging",
+    "wiki/architecture/logging",
+    "wiki/architecture/intermediate",
+    "wiki/architecture/image.png",
+    "wiki/architecture/dwh",
+    "wiki/architecture",
+    "wiki/easy_read/staging",
+    "wiki/easy_read/logging",
+    "wiki/easy_read/intermediate",
+    "architecture/image.png"
+  ]
+}
