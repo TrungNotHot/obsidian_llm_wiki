@@ -95,7 +95,7 @@ def audit_vault(vault_path: Path):
 
 def main():
     parser = argparse.ArgumentParser(description="Audit Obsidian Knowledge Vault Integrity.")
-    parser.add_argument("vault", nargs="?", default="docs", help="Path to knowledge vault (default: docs)")
+    parser.add_argument("vault", nargs="?", default=".", help="Path to knowledge vault (default: .)")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format")
     args = parser.parse_args()
 
