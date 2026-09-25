@@ -1,0 +1,6 @@
+{
+  "name": "obsidian-llm-wiki",
+  "version": "1.0.0",
+  "description": "Andrej Karpathy & Mr. Buzzoni LLM Wiki integration for Obsidian: persistent compounding knowledge management, automated ingestion, indexing, health checks, and file-based reports",
+  "author": "Antigravity Pair"
+}
