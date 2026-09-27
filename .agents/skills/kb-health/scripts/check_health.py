@@ -65,8 +65,13 @@ def audit_vault(vault_path: Path):
                 except ValueError:
                     pass
 
+        # Strip YAML frontmatter: metadata fields (e.g. clipper `author: "[[name]]"`)
+        # are plain-text by policy, never real wikilinks — ponytail: frontmatter
+        # excluded from link scan so author artifacts can't flag as broken.
+        body = re.sub(r"^---\n.*?\n---", "", raw, count=1, flags=re.DOTALL)
+
         # Strip code blocks and inline code to prevent false positives from documentation examples
-        clean = re.sub(r"```.*?```", "", raw, flags=re.DOTALL)
+        clean = re.sub(r"```.*?```", "", body, flags=re.DOTALL)
         clean = re.sub(r"`.*?`", "", clean)
 
         for link in link_pat.findall(clean):

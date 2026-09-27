@@ -26,6 +26,7 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
      - Check notes flagged with `contested: true` or `confidence: low`.
      - Check stale notes (>90 days without updates) and oversized pages (>200 lines).
    - The script is fast but blind to semantic issues — it NEVER replaces Layer 2 below.
+  - **Clipper author-link policy**: Obsidian Web Clipper writes `author: "[[name]]"` wikilinks in `raw/` frontmatter. These are never real links — normalize to plain text (`author: "name"`) on sight without asking. The script already excludes frontmatter from link scanning, so this is a silent normalization, not a broken-link fix.
 
 2. **Layer 2 — Agent Sweep (mandatory, covers what the script cannot)**:
    - **Index completeness**: list all pages under `wiki/` and confirm each appears in `index.md`.
