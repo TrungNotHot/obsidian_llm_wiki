@@ -46,3 +46,9 @@ wiki/_archive/**/*
 reports/*
 !reports/README.md
 !reports/.gitkeep
+
+# ============ Local-only (never push) ============
+.obsidian/graph.json
+index.md
+log.md
+wiki/TODO.md
