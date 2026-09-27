@@ -16,9 +16,6 @@
 **/mcp_config.json
 !**/mcp_config.example.json
 
-# ============ Local agent symlinks (canonical đã nằm ở .agents/plugins) ============
-.agents/skills/
-
 # ============ Vault data (chỉ push design: README, TODO, SCHEMA, index, .gitkeep) ============
 # raw sources
 raw/articles/*
