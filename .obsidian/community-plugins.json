@@ -1,4 +1,5 @@
 [
   "dataview",
-  "obsidian-local-rest-api"
+  "obsidian-local-rest-api",
+  "remotely-save"
 ]

@@ -1,3 +1,51 @@
+# ============ Obsidian local state (never push) ============
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
 .obsidian/cache/
+.obsidian/hotkeys.json
+
+# ============ Obsidian plugins runtime / secrets / build artifacts ============
+# data.json chứa API key, certs, private keys, cloud tokens -> never push
+.obsidian/plugins/*/data.json
+# main.js là build output rất nặng (vài MB) -> không push, user tự cài plugin từ community
+.obsidian/plugins/*/main.js
+# remotely-save chứa cloud credentials (S3/Drive/Dropbox) -> ignore toàn bộ
+.obsidian/plugins/remotely-save/
+
+# ============ MCP config chứa secrets (never push) ============
+**/mcp_config.json
+!**/mcp_config.example.json
+
+# ============ Local agent symlinks (canonical đã nằm ở .agents/plugins) ============
+.agents/skills/
+
+# ============ Vault data (chỉ push design: README, TODO, SCHEMA, index, .gitkeep) ============
+# raw sources
+raw/articles/*
+!raw/articles/.gitkeep
+raw/assets/*
+!raw/assets/.gitkeep
+raw/superpowers/**/*
+!raw/superpowers/**/
+!raw/superpowers/**/.gitkeep
+!raw/superpowers/**/README.md
+
+# wiki living notes
+wiki/concepts/*
+!wiki/concepts/README.md
+!wiki/concepts/.gitkeep
+wiki/entities/*
+!wiki/entities/README.md
+!wiki/entities/.gitkeep
+wiki/easy_read/*
+!wiki/easy_read/README.md
+!wiki/easy_read/.gitkeep
+wiki/_archive/**/*
+!wiki/_archive/**/
+!wiki/_archive/README.md
+!wiki/_archive/.gitkeep
+
+# reports
+reports/*
+!reports/README.md
+!reports/.gitkeep
