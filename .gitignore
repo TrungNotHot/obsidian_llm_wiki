@@ -15,6 +15,7 @@
 # ============ MCP config chứa secrets (never push) ============
 **/mcp_config.json
 !**/mcp_config.example.json
+opencode.json
 
 # ============ Vault data (chỉ push design: README, TODO, SCHEMA, index, .gitkeep) ============
 # raw sources
