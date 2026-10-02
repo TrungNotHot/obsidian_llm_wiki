@@ -108,6 +108,7 @@ Every agent action that reads, writes, or restructures vault content must strict
 
 1. **Obsidian LLM Wiki (`/kb-*`) — Core Operations Engine**:
    - Ingesting external sources or web clips $\rightarrow$ `/kb-compile`.
+   - Extracting and collecting universal concepts/entities from project repositories into `raw/articles/` $\rightarrow$ `/kb-colluni`.
    - Rebuilding master catalog `index.md`, concept maps, and glossary $\rightarrow$ `/kb-index`.
    - Auditing broken links, orphan notes, and metadata gaps $\rightarrow$ `/kb-health`.
    - Deep multi-source investigations and architectural syntheses $\rightarrow$ `/kb-report` ("Never Answer in Chat, Always Answer in Files").
