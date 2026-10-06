@@ -33,6 +33,13 @@ echo "📦 Copying .claude (Claude Code skills)..."
 mkdir -p "$TARGET_DIR/.claude"
 cp -rn "$SCRIPT_DIR/.claude/"* "$TARGET_DIR/.claude/"
 [ -e "$TARGET_DIR/.mcp.json" ] || cp "$SCRIPT_DIR/.mcp.json" "$TARGET_DIR/.mcp.json"
+[ -f "$SCRIPT_DIR/.agents/.agentignore" ] && [ ! -f "$TARGET_DIR/.agents/.agentignore" ] && cp "$SCRIPT_DIR/.agents/.agentignore" "$TARGET_DIR/.agents/"
+
+# 1c. Copy AGENTS.md workspace guidelines if not present
+if [ -f "$SCRIPT_DIR/AGENTS.md" ] && [ ! -f "$TARGET_DIR/AGENTS.md" ]; then
+    echo "📋 Copying AGENTS.md guidelines..."
+    cp "$SCRIPT_DIR/AGENTS.md" "$TARGET_DIR/AGENTS.md"
+fi
 
 # 2. Copy docs directory (Vault scaffold)
 echo "📚 Copying docs/ (Constitutional schema, index, concepts, entities)..."
