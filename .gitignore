@@ -12,11 +12,6 @@
 # remotely-save chứa cloud credentials (S3/Drive/Dropbox) -> ignore toàn bộ
 .obsidian/plugins/remotely-save/
 
-# ============ MCP config chứa secrets (never push) ============
-**/mcp_config.json
-!**/mcp_config.example.json
-opencode.json
-
 # ============ Vault data (chỉ push design: README, TODO, SCHEMA, index, .gitkeep) ============
 # raw sources
 raw/articles/*
@@ -53,3 +48,4 @@ reports/*
 index.md
 log.md
 wiki/TODO.md
+.env
