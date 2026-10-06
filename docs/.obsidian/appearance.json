@@ -1,0 +1,11 @@
+{
+  "cssTheme": "",
+  "theme": "system",
+  "accentColor": "",
+  "textFontFamily": "Ubuntu",
+  "showRibbon": true,
+  "showViewHeader": true,
+  "nativeMenus": false,
+  "baseFontSize": 16,
+  "baseFontSizeAction": true
+}
