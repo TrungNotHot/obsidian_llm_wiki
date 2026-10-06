@@ -144,10 +144,10 @@ def convert_file(
     }
 
 
-def find_vault_root() -> Path:
+def find_vault_root(start_path: Path | None = None) -> Path:
     """Find vault root by walking up from script location first, then cwd."""
-    # 1. Walk up from script file location
-    curr = Path(__file__).resolve().parent
+    # 1. Walk up from provided start_path or script file location
+    curr = (start_path or Path(__file__).resolve().parent).resolve()
     for _ in range(6):
         if (
             (curr / "SCHEMA.md").exists()
