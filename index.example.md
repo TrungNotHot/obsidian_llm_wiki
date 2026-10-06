@@ -47,8 +47,8 @@
 *Catalog index: [[raw/README|Raw Sources Directory]]*
 
 - **Articles & Web Clips**: `raw/articles/`
+- **Binary Sources**: `raw/binary/`
 - **Assets & Diagrams**: `raw/assets/`
-- **Superpowers Blueprints**: `raw/superpowers/specs/` and `raw/superpowers/plans/`
 
 ---
 

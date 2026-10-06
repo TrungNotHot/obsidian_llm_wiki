@@ -20,10 +20,6 @@ raw/binary/*
 !raw/binary/.gitkeep
 raw/assets/*
 !raw/assets/.gitkeep
-raw/superpowers/**/*
-!raw/superpowers/**/
-!raw/superpowers/**/.gitkeep
-!raw/superpowers/**/README.md
 
 # wiki living notes
 wiki/concepts/*

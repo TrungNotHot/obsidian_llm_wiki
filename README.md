@@ -14,10 +14,8 @@ llm_wiki/
 │
 ├── raw/                 # Layer 1: Immutable Sources (read-only)
 │   ├── articles/        # Clipped web articles and technical write-ups
-│   ├── assets/          # Downloaded diagrams, images, and attachments
-│   └── superpowers/     # Historical design specs and phased execution plans
-│       ├── specs/       # Technical specifications
-│       └── plans/       # Phased implementation plans
+│   ├── binary/          # Raw binary sources (.pdf, .docx, .pptx, .xlsx, images)
+│   └── assets/          # Downloaded diagrams, images, and attachments
 │
 ├── wiki/                # Layer 2: Living Knowledge Wiki (agent-maintained)
 │   ├── concepts/        # Atomic architectural, algorithmic, and domain concepts
