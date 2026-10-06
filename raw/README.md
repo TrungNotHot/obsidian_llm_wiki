@@ -6,7 +6,8 @@ This directory contains raw, immutable source documents that serve as the founda
 
 ## 📂 Subdirectories
 
-- **`articles/`**: Web articles, API specs, and technical references captured via **Obsidian Web Clipper** or `/kb-compile <url>`.
+- **`articles/`**: Web articles, API specs, and technical references captured via **Obsidian Web Clipper**, `/kb-compile <url>`, or converted from `binary/`.
+- **`binary/`**: Immutable binary source documents (`.pdf`, `.docx`, `.pptx`, `.xlsx`, images) parsed into markdown via `parse_document.py` (`markitdown`).
 - **`assets/`**: Downloaded diagrams, architecture screenshots, and image attachments referenced by notes.
 - **`superpowers/`**: System blueprints:
   - `specs/`: Technical design specifications.

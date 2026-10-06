@@ -51,13 +51,15 @@ status: published # published | draft | deprecated
 ---
 
 ## Raw Layer Frontmatter (`raw/`)
-Raw sources captured from external articles, API specs, or web clips must include a frontmatter block with a body hash to detect silent source drift on re-ingestion:
+Raw sources captured from external articles, web clips, or converted from binary documents (`raw/binary/`) must include a frontmatter block with a SHA-256 hash to detect silent source drift on re-ingestion:
 
 ```yaml
 ---
-source_url: https://example.com/source # if applicable
+source_url: https://example.com/source # for web clips
+source_file: raw/binary/document.pdf # for binary conversions
+original_type: pdf | docx | pptx | xlsx # source format
 ingested: YYYY-MM-DD
-sha256: <hex-digest-of-body-content-below-frontmatter>
+sha256: <hex-digest-of-source-file-or-content>
 ---
 ```
 

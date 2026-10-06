@@ -19,7 +19,16 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - Read `index.md` to check existing pages and summaries.
    - Scan the last 20–30 lines of `log.md` to understand recent activity and prevent duplicating work.
 
-2. **Step 1 — Source Capture (Local File or URL)**:
+2. **Step 1 — Source Capture (Binary Document, Local File, or URL)**:
+   - **If a binary document (`.pdf`, `.docx`, `.pptx`, `.xlsx`, images) is provided or added to `raw/binary/`**:
+     - Convert the binary source into clean Markdown via the helper script:
+       ```bash
+       uv run --with "markitdown[all]" python3 .claude/skills/kb-compile/scripts/parse_document.py <path_to_binary_file>
+       # Or scan all binary files:
+       uv run --with "markitdown[all]" python3 .claude/skills/kb-compile/scripts/parse_document.py
+       ```
+     - The script automatically handles SHA-256 caching, prevents duplicate conversion, and outputs to `raw/articles/<slug>.md`.
+     - Read the generated `raw/articles/<slug>.md` in full to proceed with distillation.
    - **If a URL is provided**: Use `read_url_content` to extract clean markdown.
      - Compute the `sha256` hash of the content body.
      - If the file already exists in `raw/articles/`, compare the new hash with the stored `sha256`:

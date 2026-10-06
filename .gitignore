@@ -16,6 +16,8 @@
 # raw sources
 raw/articles/*
 !raw/articles/.gitkeep
+raw/binary/*
+!raw/binary/.gitkeep
 raw/assets/*
 !raw/assets/.gitkeep
 raw/superpowers/**/*
