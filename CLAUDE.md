@@ -14,6 +14,7 @@
   - `wiki/TODO.md`: Integrity backlog for broken links, missing metadata, and content drift.
 - **Tooling & MCP**:
   - Obsidian MCP (`mcp_obsidian`): Local REST API integration on port 27124 via `.mcp.json`. Direct file system operations are also supported for markdown editing.
+  - Python Scripts: Health checks via `.claude/skills/kb-health/scripts/check_health.py`.
 
 ---
 

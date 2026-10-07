@@ -13,7 +13,8 @@
   - `log.md`: Append-only chronological operations log.
   - `wiki/TODO.md`: Integrity backlog for broken links, missing metadata, and content drift.
 - **Tooling & MCP**:
-  - Obsidian MCP (`mcp_obsidian`): Local REST API integration on port 27124 via `.mcp.json`. Direct file system operations are also supported for markdown editing.
+  - Obsidian MCP (`mcp_obsidian`): Local REST API integration on port 27124 via `.agents/mcp_config.json` (or `.mcp.json`). Direct file system operations are also supported for markdown editing.
+  - Python Scripts: Health checks via `.agents/skills/kb-health/scripts/check_health.py`.
   - Shell Proxy: RTK (`rtk`) for token-optimized command execution.
 
 ---
@@ -64,7 +65,7 @@ RTK filters and compresses command output before it reaches the LLM context, cut
 #### Constraints
 - Respect sensitive configuration and credential boundaries:
   - `.env*`
-  - `.mcp.json` / `**/mcp_config.json` (contains `OBSIDIAN_API_KEY`)
+  - `**/mcp_config.json` (contains `OBSIDIAN_API_KEY`)
   - `.obsidian/plugins/*/data.json` (contains plugin tokens, API keys)
   - `.obsidian/plugins/remotely-save/*` (contains cloud sync credentials)
 - Before reading, inspecting, parsing, or accessing any file or directory containing secrets, ask the user for explicit permission.
