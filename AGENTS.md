@@ -14,14 +14,12 @@
   - `wiki/TODO.md`: Integrity backlog for broken links, missing metadata, and content drift.
 - **Tooling & MCP**:
   - Obsidian MCP (`mcp_obsidian`): Local REST API integration on port 27124 via `.agents/mcp_config.json` (or `.mcp.json`). Direct file system operations are also supported for markdown editing.
-  - Python Scripts: Health checks via `.agents/skills/kb-health/scripts/check_health.py`.
-  - Shell Proxy: RTK (`rtk`) for token-optimized command execution.
 
 ---
 
 ## ⚡ Core Rules & Behavioral Constraints
 
-### 1. RTK - Rust Token Killer (Antigravity)
+### 1. RTK - Rust Token Killer
 
 **Usage**: Token-optimized CLI proxy for shell commands.
 - **Antigravity**: Agent MUST explicitly prefix shell commands with `rtk` as Antigravity lacks native bash interception hooks.
