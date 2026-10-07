@@ -12,8 +12,6 @@
   - `index.md`: Master content catalog, navigation map, and technical glossary.
   - `log.md`: Append-only chronological operations log.
   - `wiki/TODO.md`: Integrity backlog for broken links, missing metadata, and content drift.
-- **Tooling & MCP**:
-  - Obsidian MCP (`mcp_obsidian`): Local REST API integration on port 27124 via `.agents/mcp_config.json` (or `.mcp.json`). Direct file system operations are also supported for markdown editing.
 
 ---
 
@@ -22,7 +20,7 @@
 ### 1. RTK - Rust Token Killer
 
 **Usage**: Token-optimized CLI proxy for shell commands.
-- **Antigravity**: Agent MUST explicitly prefix shell commands with `rtk` as Antigravity lacks native bash interception hooks.
+- **Agents without native bash interception hooks** (e.g. Antigravity, OpenCode): MUST explicitly prefix shell commands with `rtk`.
 
 #### Rule
 Always prefix shell commands with `rtk` to minimize token consumption.
@@ -71,12 +69,12 @@ RTK filters and compresses command output before it reaches the LLM context, cut
 
 ---
 
-### 4. File Path Link Format in Responses
+### 4. Respect `.agentignore`
 
 #### Constraints
-- **Plain Text Relative Paths**: When referencing files and line numbers in responses, ALWAYS use plain text relative paths without leading `/`, formatted as `path/to/file.ext:line` (e.g. `wiki/concepts/azure-databricks-core-concepts.md:15` or `SCHEMA.md:31-50`).
-- **NO Markdown Hyperlinks for Files**: Do NOT wrap file paths in markdown link syntax (e.g. `[label](path:line)` or `[label](file:///...)`). Markdown hyperlinks trigger external OS file managers (File Explorer) instead of opening directly in an IDE editor tab.
-- **NO Absolute Machine Paths**: Never use local absolute paths (e.g. `/home/...` or `/wiki/...`).
+- `.agentignore` (gitignore syntax) lists files and directories agents must not access.
+- Do NOT read, search, inspect, parse, print, or edit any path matching `.agentignore`, unless the user gives explicit permission for that specific path.
+- Skip matching paths in globs, greps, and directory scans.
 
 ---
 
