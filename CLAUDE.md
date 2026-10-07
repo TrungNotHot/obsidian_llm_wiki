@@ -19,43 +19,12 @@
 - **Tooling & MCP**:
   - Obsidian MCP (`mcp_obsidian`): Local REST API integration on port 27124 via `.agents/mcp_config.json` (or `.mcp.json`). Direct file system operations are also supported for markdown editing.
   - Python Scripts: Health checks via `.agents/skills/kb-health/scripts/check_health.py docs`.
-  - Shell Proxy: RTK (`rtk`) for token-optimized command execution.
 
 ---
 
 ## ⚡ Core Rules & Behavioral Constraints
 
-### 1. RTK - Rust Token Killer
-
-**Usage**: Token-optimized CLI proxy for shell commands.
-- **Agents without native bash interception hooks** (e.g. Antigravity, OpenCode): MUST explicitly prefix shell commands with `rtk`.
-
-#### Rule
-Always prefix shell commands with `rtk` to minimize token consumption.
-
-Examples:
-```bash
-rtk git status
-rtk git diff
-rtk ls docs/wiki/concepts/
-rtk grep -rn "pattern" docs/wiki/
-rtk python3 .agents/skills/kb-health/scripts/check_health.py docs
-```
-
-#### Meta Commands
-```bash
-rtk gain              # Show token savings
-rtk gain --history    # Command history with savings
-rtk discover          # Find missed RTK opportunities
-rtk proxy <cmd>       # Run raw (no filtering, for debugging)
-```
-
-#### Why
-RTK filters and compresses command output before it reaches the LLM context, cutting up to 90% of the bash output on common operations. Always use `rtk <cmd>` instead of raw commands.
-
----
-
-### 2. Git Commit Rules
+### 1. Git Commit Rules
 
 #### Constraints
 - **NO Automatic Git Commits**: Do NOT run `git commit` or automatically commit changes unless the user explicitly instructs you to commit.
@@ -64,7 +33,7 @@ RTK filters and compresses command output before it reaches the LLM context, cut
 
 ---
 
-### 3. Sensitive File Access Rules
+### 2. Sensitive File Access Rules
 
 #### Constraints
 - Respect sensitive configuration and credential boundaries:
@@ -77,7 +46,7 @@ RTK filters and compresses command output before it reaches the LLM context, cut
 
 ---
 
-### 4. Respect `.agentignore`
+### 3. Respect `.agentignore`
 
 #### Constraints
 - `.agentignore` (gitignore syntax) lists files and directories agents must not access.
@@ -86,7 +55,7 @@ RTK filters and compresses command output before it reaches the LLM context, cut
 
 ---
 
-### 5. Knowledge Base Operations & Schema Governance
+### 4. Knowledge Base Operations & Schema Governance
 
 Every agent action that reads, writes, or restructures vault content must strictly adhere to `docs/SCHEMA.md`:
 
@@ -105,7 +74,7 @@ Every agent action that reads, writes, or restructures vault content must strict
 
 ---
 
-### 6. Skill Ecosystem & Contextual Selection
+### 5. Skill Ecosystem & Contextual Selection
 
 #### Core Philosophy
 - **Lightest Sufficient Ceremony**: Apply the simplest and lightest workflow sufficient to solve the problem safely and correctly. Simple lookups or single-note edits do not require heavy multi-step planning.
@@ -132,7 +101,7 @@ Every agent action that reads, writes, or restructures vault content must strict
 
 ---
 
-### 7. Conflict Resolution & User Alignment Protocol
+### 6. Conflict Resolution & User Alignment Protocol
 
 When documentation choices or organizational rules present tradeoffs:
 

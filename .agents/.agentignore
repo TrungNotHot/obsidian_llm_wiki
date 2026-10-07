@@ -1,4 +1,0 @@
-.env*
-config/*.cfg
-connections*.json
-deploy/okd/.secrets.env
