@@ -27,12 +27,12 @@ Mở `<du-an>/docs/SCHEMA.md`, tìm **Part 2: Project Domain Configuration** đ�
 
 Mở terminal tại thư mục gốc của dự án code và gọi các lệnh sau:
 
-| Skill | Cú pháp | Khi nào dùng & Chức năng | Đầu ra chính |
-|---|---|---|---|
-| **Biên dịch tài liệu** | `/kb-compile` | Khi vừa ném tài liệu/spec vào `docs/raw/` (hoặc đưa link URL). AI tự đọc, chia thành các note nhỏ có liên kết `[[...]]`.<br>• Riêng dự án: Lưu vào `local/` (nếu chỉ dùng cho dự án này).<br>• Dùng chung: Lưu vào `universal/` (nếu là pattern có thể tái sử dụng). | `docs/wiki/`, `docs/index.md`, `docs/log.md` |
-| **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). | `docs/reports/<slug>.md` |
-| **Cập nhật mục lục** | `/kb-index` | Sau khi tạo nhiều note mới hoặc sửa đổi cấu trúc wiki. AI quét lại toàn bộ note và xây lại mục lục, bảng thuật ngữ. | `docs/index.md` |
-| **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. AI tìm `[[link hỏng]]`, note mồ côi (không có ai trỏ đến), và tài liệu bị lệch (drift) so với code thực tế. | `docs/wiki/TODO.md` |
+| Skill | Cú pháp | Khi nào dùng & Chức năng | Mức suy luận (Effort) | Đầu ra chính |
+|---|---|---|---|---|
+| **Biên dịch tài liệu** | `/kb-compile` | Khi vừa ném tài liệu/spec vào `docs/raw/` (hoặc đưa link URL). AI tự đọc, chia thành các note nhỏ có liên kết `[[...]]`.<br>• Riêng dự án: Lưu vào `local/` (nếu chỉ dùng cho dự án này).<br>• Dùng chung: Lưu vào `universal/` (nếu là pattern có thể tái sử dụng). | 🧠 **Cao (High Reasoning)** | `docs/wiki/`, `docs/index.md`, `docs/log.md` |
+| **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). | 🧠 **Cao (High Reasoning)** | `docs/reports/<slug>.md` |
+| **Cập nhật mục lục** | `/kb-index` | Sau khi tạo nhiều note mới hoặc sửa đổi cấu trúc wiki. AI quét lại toàn bộ note và xây lại mục lục, bảng thuật ngữ. | ⚡ **Thấp (Fast / Low)** | `docs/index.md` |
+| **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. AI tìm `[[link hỏng]]`, note mồ côi (không có ai trỏ đến), và tài liệu bị lệch (drift) so với code thực tế. | ⚡ **Thấp (Fast / Low)** | `docs/wiki/TODO.md` |
 
 ---
 
@@ -58,13 +58,13 @@ Dùng làm kho bách khoa toàn thư cá nhân/công ty, độc lập hoàn toà
 
 Mở terminal tại thư mục `obsidian_llm_wiki/` và gọi các lệnh sau:
 
-| Skill | Cú pháp | Khi nào dùng & Chức năng | Đầu ra chính |
-|---|---|---|---|
-| **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, tự động ẩn biến/đường dẫn nội bộ nhạy cảm và gom về kho trung tâm. | `raw/articles/<slug>.md` |
-| **Biên dịch kiến thức** | `/kb-compile` | Khi có bài viết/sách mới ném vào `raw/articles/` hoặc sau khi vừa chạy `/kb-colluni`. AI biến nội dung thô thành các note nguyên tử tại `concepts/` và `entities/`. | `wiki/`, `index.md`, `log.md` |
-| **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn. | `reports/<slug>.md` |
-| **Cập nhật mục lục** | `/kb-index` | Xây dựng lại toàn bộ cây danh mục kiến trúc, glossary thuật ngữ và topic map của toàn vault. | `index.md` |
-| **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter. | `wiki/TODO.md` |
+| Skill | Cú pháp | Khi nào dùng & Chức năng | Mức suy luận (Effort) | Đầu ra chính |
+|---|---|---|---|---|
+| **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, tự động ẩn biến/đường dẫn nội bộ nhạy cảm và gom về kho trung tâm. | 🧠 **Cao (High Reasoning)** | `raw/articles/<slug>.md` |
+| **Biên dịch kiến thức** | `/kb-compile` | Khi có bài viết/sách mới ném vào `raw/articles/` hoặc sau khi vừa chạy `/kb-colluni`. AI biến nội dung thô thành các note nguyên tử tại `concepts/` và `entities/`. | 🧠 **Cao (High Reasoning)** | `wiki/`, `index.md`, `log.md` |
+| **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn. | 🧠 **Cao (High Reasoning)** | `reports/<slug>.md` |
+| **Cập nhật mục lục** | `/kb-index` | Xây dựng lại toàn bộ cây danh mục kiến trúc, glossary thuật ngữ và topic map của toàn vault. | ⚡ **Thấp (Fast / Low)** | `index.md` |
+| **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter. | ⚡ **Thấp (Fast / Low)** | `wiki/TODO.md` |
 
 ---
 
@@ -103,6 +103,29 @@ docs/wiki/.../universal/             docs/wiki/.../universal/
      /kb-compile
      ```
    - AI đọc bài thô vừa thu thập, gắn liên kết chéo `[[...]]` vào hệ thống kiến thức chung và cập nhật `index.md`.
+
+---
+
+## Phần 4: Lựa chọn Model & Mức suy luận (Reasoning Effort)
+
+Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinking cao. Tối ưu hiệu quả và chi phí như sau:
+
+### 1. Nhóm tác vụ yêu cầu suy luận cao (High Reasoning Effort)
+> **Áp dụng cho**: `/kb-compile`, `/kb-report`, `/kb-colluni`
+
+- **Cấu hình đề xuất**: Sử dụng model mạnh (ví dụ: Claude Sonnet, Gemini Pro, GPT-4o/o-series) và **bật mức suy luận cao (Thinking / Reasoning: High)**.
+- **Vì sao cần suy luận cao?**:
+  - **`/kb-compile`**: Cần đọc hiểu đa tầng, trích xuất đúng bản chất khái niệm (atomic concept), kiểm tra xem có mâu thuẫn (contradiction) với các note cũ hay không.
+  - **`/kb-report`**: Cần điều tra sâu xuyên suốt repo/codebase, liên kết nhiều giả thuyết logic để giải bài toán kỹ thuật phức tạp.
+  - **`/kb-colluni`**: Đòi hỏi khả năng trừu tượng hóa cực tốt để biến code cụ thể của dự án thành bài học tổng quát, đồng thời nhận diện và làm sạch triệt để các dữ liệu nhạy cảm nội bộ.
+
+### 2. Nhóm tác vụ cấu trúc & định dạng (Không cần suy luận cao)
+> **Áp dụng cho**: `/kb-index`, `/kb-health`
+
+- **Cấu hình đề xuất**: Sử dụng model nhanh, tiết kiệm (ví dụ: Gemini Flash, Claude Haiku, GPT-4o-mini) với **mức thinking thấp hoặc tắt**.
+- **Vì sao không cần suy luận cao?**:
+  - Đây là các tác vụ máy móc: chạy script kiểm tra định dạng (`check_health.py`), quét chuỗi regex tìm link `[[...]]` gãy, gom danh sách note mồ côi và sắp xếp lại cây mục lục theo mẫu có sẵn.
+  - Dùng model mạnh cho 2 skill này sẽ gây lãng phí token và thời gian chờ đợi.
 
 ---
 
