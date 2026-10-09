@@ -40,9 +40,24 @@ Mở terminal tại thư mục gốc của dự án code và gọi các lệnh s
 |---|---|---|---|---|
 | **Biên dịch tài liệu** | `/kb-compile` | Khi vừa ném tài liệu/spec vào `docs/raw/` (hoặc đưa link URL). AI tự đọc, chia thành các note nhỏ có liên kết `[[...]]`. AI tự tìm note liên quan có sẵn để cập nhật, tránh tạo trùng.<br>• Riêng dự án: Lưu vào `local/` (nếu chỉ dùng cho dự án này).<br>• Dùng chung: Lưu vào `universal/` (nếu là pattern có thể tái sử dụng). | 🧠 **High** | `docs/wiki/`, `docs/index.md`, `docs/log.md` |
 | **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). Nếu wiki thiếu dữ liệu, AI hỏi bạn trước khi tìm web (nguồn web ghi rõ URL, gắn nhãn chưa kiểm chứng). | 🧠 **High** | `docs/reports/<slug>.md` |
-| **Hỏi đáp nhanh** | `/kb-ask <câu hỏi>` | Tra cứu nhanh kiến thức trong `docs/wiki/`, trả lời ngay trong chat (có trích dẫn `[[note]]`), không ghi file. Nếu wiki thiếu, AI **hỏi bạn trước** khi tìm web và gắn nhãn nguồn web là chưa kiểm chứng. | ⚡ **Low** | Trả lời trong chat |
+| **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. AI tìm `[[link hỏng]]`, note mồ côi (không có ai trỏ đến), và tài liệu bị lệch (drift) so với code thực tế, đồng thời rà mâu thuẫn giữa các note (cần đọc hiểu nội dung). | 🧠 **High** | `docs/wiki/TODO.md` |
+| **Hỏi đáp nhanh** | `/kb-ask <câu hỏi>` | Tra cứu nhanh kiến thức trong `docs/wiki/`, trả lời ngay trong chat (có trích dẫn `[[note]]`), không ghi file. Nếu wiki thiếu, AI **hỏi bạn trước** khi tìm web và gắn nhãn nguồn web là chưa kiểm chứng. | ⚖️ **Medium** | Trả lời trong chat |
 | **Cập nhật mục lục** | `/kb-index` | Sau khi tạo nhiều note mới hoặc sửa đổi cấu trúc wiki. AI quét lại toàn bộ note và xây lại mục lục, bảng thuật ngữ. | ⚡ **Low** | `docs/index.md` |
-| **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. AI tìm `[[link hỏng]]`, note mồ côi (không có ai trỏ đến), và tài liệu bị lệch (drift) so với code thực tế. | ⚡ **Low** | `docs/wiki/TODO.md` |
+
+
+### 3. Khi code thay đổi nhưng không có tài liệu trong `docs/raw/`
+
+`/kb-compile` chỉ biến **nguồn đưa vào** (`docs/raw/` hoặc URL) thành note wiki. Nếu dev thêm code hoặc logic mới mà không ai viết spec vào `docs/raw/`, `/kb-compile` không có đầu vào nên sẽ không tạo note tương ứng. Có 3 cách bù:
+
+1. **Phát hiện: `/kb-health`**: bước Agent Sweep so sánh các thành phần code đang có (ví dụ `dags/`, `src/`, `lib/`) với `docs/wiki/entities/`. Thành phần nào chưa có entity tương ứng sẽ được ghi vào `docs/wiki/TODO.md` ở mức 🔴 High (Critical Code Drift). Lưu ý: nó chỉ đối chiếu với trang **entity**, không kiểm tra các trang hướng dẫn trong `easy_read/`.
+2. **Dịch ngược từ code: `/kb-report`**: AI đọc trực tiếp mã nguồn, SQL, test và ghi báo cáo vào `docs/reports/`, ví dụ:
+   ```text
+   /kb-report giải thích logic transform và watermark của module X
+   ```
+   Nếu report làm rõ một khái niệm/quy tắc tái sử dụng được, AI trích thành note nguyên tử trong `docs/wiki/concepts/` hoặc `entities/` (chỉ khi có khái niệm như vậy, không phải lần nào cũng có).
+3. **Ra lệnh trực tiếp**: với thay đổi nhỏ, chỉ cần nói "Vừa thêm DAG X trong code, cập nhật wiki tương ứng". AI đọc code và sửa trang liên quan, đây là yêu cầu thường chứ không phải skill riêng, nên hãy dặn thêm cập nhật `docs/index.md` và `docs/log.md` rồi chạy `/kb-health` để kiểm tra link.
+
+Với tính năng lớn, cách bài bản hơn là thả spec/thiết kế vào `docs/raw/superpowers/specs/` rồi chạy `/kb-compile`: wiki vừa có ngữ cảnh thiết kế (vì sao làm vậy), vừa được đối chiếu với code.
 
 ---
 
@@ -70,12 +85,12 @@ Mở terminal tại thư mục `obsidian_llm_wiki/` và gọi các lệnh sau:
 
 | Skill | Cú pháp | Khi nào dùng & Chức năng | Mức suy luận (Effort) | Đầu ra chính |
 |---|---|---|---|---|
-| **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, tự động ẩn biến/đường dẫn nội bộ nhạy cảm và gom về kho trung tâm. | 🧠 **High** | `raw/articles/<slug>.md` |
 | **Biên dịch kiến thức** | `/kb-compile` | Khi có bài viết/sách mới ném vào `raw/articles/` hoặc sau khi vừa chạy `/kb-colluni`. AI biến nội dung thô thành các note nguyên tử tại `concepts/` và `entities/`. Trước khi ghi, AI tự tìm các note liên quan trong wiki (cả note được link tới) để cập nhật thay vì tạo trùng và phát hiện mâu thuẫn; nếu ảnh hưởng ≥ 10 trang sẽ hỏi bạn trước. | 🧠 **High** | `wiki/`, `index.md`, `log.md` |
 | **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn. Nếu wiki thiếu dữ liệu, AI hỏi bạn trước khi tìm web (nguồn web ghi rõ URL, gắn nhãn chưa kiểm chứng). | 🧠 **High** | `reports/<slug>.md` |
-| **Hỏi đáp nhanh** | `/kb-ask <câu hỏi>` | Tra cứu nhanh kiến thức trong wiki, trả lời ngay trong chat (có trích dẫn `[[note]]`), không ghi file. Nếu wiki thiếu, AI **hỏi bạn trước** khi tìm web và gắn nhãn nguồn web là chưa kiểm chứng. | ⚡ **Low** | Trả lời trong chat |
+| **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter, và rà mâu thuẫn giữa các note (cần đọc hiểu nội dung). | 🧠 **High** | `wiki/TODO.md` |
+| **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, tự động ẩn biến/đường dẫn nội bộ nhạy cảm và gom về kho trung tâm. | ⚖️ **Medium** | `raw/articles/<slug>.md` |
+| **Hỏi đáp nhanh** | `/kb-ask <câu hỏi>` | Tra cứu nhanh kiến thức trong wiki, trả lời ngay trong chat (có trích dẫn `[[note]]`), không ghi file. Nếu wiki thiếu, AI **hỏi bạn trước** khi tìm web và gắn nhãn nguồn web là chưa kiểm chứng. | ⚖️ **Medium** | Trả lời trong chat |
 | **Cập nhật mục lục** | `/kb-index` | Xây dựng lại toàn bộ cây danh mục kiến trúc, glossary thuật ngữ và topic map của toàn vault. | ⚡ **Low** | `index.md` |
-| **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter. | ⚡ **Low** | `wiki/TODO.md` |
 
 ---
 
@@ -125,22 +140,26 @@ Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinki
 
 | Nhóm tác vụ | Skill | Model & Mức Effort khuyến nghị | Cách thiết lập thực tế |
 |---|---|---|---|
-| **Yêu cầu suy luận cao** | `/kb-compile`<br>`/kb-report`<br>`/kb-colluni` | 🧠 **$\ge$ Sonnet 5.5 (medium)**<br>(Tối thiểu Sonnet 5.5 mức Medium, hoặc High) | Thiết lập trong chat / CLI:<br>`/model sonnet`<br>`/effort medium` hoặc `/effort high` |
-| **Cấu trúc & Định dạng** | `/kb-index`<br>`/kb-health`<br>`/kb-ask` | ⚡ **$\le$ Sonnet 5.5 (low) hoặc Haiku**<br>(Dùng Haiku hoặc Sonnet 5.5 mức Low / tắt Thinking) | Thiết lập trong chat / CLI:<br>`/model haiku`<br>hoặc `/model sonnet` kèm `/effort low` |
+| **Suy luận cao** | `/kb-compile`<br>`/kb-report`<br>`/kb-health` | 🧠 **Sonnet 5.5 (high)**<br>(Mức High) | Thiết lập trong chat / CLI:<br>`/model sonnet`<br>`/effort high` |
+| **Suy luận trung bình** | `/kb-colluni`<br>`/kb-ask` | ⚖️ **Sonnet 5.5 (medium)**<br>(Mức Medium) | Thiết lập trong chat / CLI:<br>`/model sonnet`<br>`/effort medium` |
+| **Cấu trúc & Định dạng** | `/kb-index` | ⚡ **$\le$ Sonnet 5.5 (low) hoặc Haiku**<br>(Dùng Haiku hoặc Sonnet 5.5 mức Low / tắt Thinking) | Thiết lập trong chat / CLI:<br>`/model haiku`<br>hoặc `/model sonnet` kèm `/effort low` |
 
 ---
 
 ### Chi tiết vì sao chọn cấu hình này:
 
-1. **Tại sao cần $\ge$ Sonnet 5.5 (medium) cho Compile, Report, Colluni?**:
+1. **Tại sao dùng Sonnet 5.5 (high) cho Compile, Report, Health?**:
    - **`/kb-compile`**: Cần đọc hiểu đa tầng, bóc tách đúng bản chất khái niệm (atomic concept), kiểm tra xem có mâu thuẫn (contradiction) với các note cũ hay không.
    - **`/kb-report`**: Cần điều tra sâu xuyên suốt repo/codebase, liên kết nhiều giả thuyết logic để giải bài toán kỹ thuật phức tạp.
-   - **`/kb-colluni`**: Đòi hỏi khả năng trừu tượng hóa cực tốt để biến code cụ thể của dự án thành bài học tổng quát, đồng thời nhận diện và làm sạch triệt để các dữ liệu nhạy cảm nội bộ.
-   - *→ Mức suy luận từ Medium trở lên giúp model có đủ không gian "tư duy" để xử lý và liên kết dữ liệu phức tạp mà không bị ảo giác.*
+   - **`/kb-health`**: Script chỉ bắt được lỗi máy móc (link gãy, note mồ côi, note cũ). Phần "Agent Sweep" mới là phần chính: tìm mâu thuẫn giữa các note, đối chiếu tài liệu với code (drift), kiểm tra `index.md`/frontmatter/taxonomy. Đây là các việc cần đọc hiểu ngữ nghĩa nên không thể dùng mức Low.
+   - *→ Mức High giúp model có đủ không gian "tư duy" để xử lý và liên kết dữ liệu phức tạp mà không bị ảo giác.*
 
-2. **Tại sao chỉ cần $\le$ Sonnet 5.5 (low) hoặc Haiku cho Index, Health, Ask?**:
-   - Đây là các tác vụ máy móc: chạy script kiểm tra định dạng (`check_health.py`), quét chuỗi regex tìm link `[[...]]` gãy, gom danh sách note mồ côi và sắp xếp lại cây mục lục theo mẫu có sẵn.
-   - **`/kb-ask`**: Chỉ tra cứu và trích dẫn lại nội dung có sẵn trong wiki (theo từ khóa và link `[[...]]`), không cần suy luận sâu. Câu hỏi cần tổng hợp nhiều nguồn thì dùng `/kb-report`.
+2. **Tại sao dùng Sonnet 5.5 (medium) cho Colluni, Ask?**:
+   - **`/kb-colluni`**: Cần trừu tượng hóa code cụ thể của dự án thành bài học tổng quát và làm sạch dữ liệu nhạy cảm nội bộ, nhưng phạm vi mỗi lần chạy hẹp và có quy trình rõ ràng nên Medium là đủ.
+   - **`/kb-ask`**: Dù chỉ trả lời nhanh, AI vẫn phải đi theo link `[[...]]` giữa các note, chọn note liên quan, trích dẫn đúng nguồn và nhận ra khi wiki chưa đủ thông tin (để hỏi bạn trước khi tìm web). Câu hỏi cần tổng hợp nhiều nguồn thì dùng `/kb-report`.
+
+3. **Tại sao chỉ cần $\le$ Sonnet 5.5 (low) hoặc Haiku cho Index?**:
+   - **`/kb-index`**: Tác vụ máy móc: gom danh sách note và sắp xếp lại cây mục lục, glossary theo mẫu có sẵn.
    - *→ Dùng Haiku hoặc Sonnet 5.5 ở mức Low giúp hoàn thành ngay trong vài giây, tiết kiệm tối đa chi phí token mà kết quả vẫn chính xác 100%.*
 
 ---
