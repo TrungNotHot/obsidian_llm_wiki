@@ -32,10 +32,13 @@ def audit_vault(vault_path: Path):
     # Wikilinks resolve by note name (any folder, incl. raw/ specs); attachments (![[img.png]])
     # resolve against non-md files by name.
     all_stems = {f.stem: f for f in md_files}
+    # Names backed by a note outside raw/ (so a same-named raw/ copy can't mask a missing note).
+    non_raw_stems = {f.stem for f in md_files if f.relative_to(vault_path).parts[0] != "raw"}
     attachments = {f.name for f in vault_path.glob("**/*") if f.is_file() and f.suffix != ".md" and visible(f)}
     inbound = {f.stem: 0 for f in wiki_dir.glob("**/*.md") if not f.name.startswith(".")} if wiki_dir.exists() else {}
 
     broken_links = []
+    raw_only_links = []
     contested_pages = []
     oversized_pages = []
     stale_pages = []
@@ -89,6 +92,8 @@ def audit_vault(vault_path: Path):
             if target in all_stems:
                 if target in inbound:
                     inbound[target] += 1
+                if target not in non_raw_stems and rel_path.split("/")[0] != "raw":
+                    raw_only_links.append({"source": rel_path, "target": link.strip()})
             else:
                 broken_links.append({"source": rel_path, "target": link.strip()})
 
@@ -101,6 +106,7 @@ def audit_vault(vault_path: Path):
         "vault": str(vault_path),
         "total_files": len(md_files),
         "broken_links": broken_links,
+        "raw_only_links": raw_only_links,
         "orphans": orphans,
         "contested": contested_pages,
         "oversized": oversized_pages,
@@ -129,6 +135,10 @@ def main():
         print(f"  - In {b['source']}: [[{b['target']}]]")
     if len(result["broken_links"]) > 10:
         print(f"  ... and {len(result['broken_links']) - 10} more")
+
+    print(f"\n🟡 Links resolving only to raw/ ({len(result['raw_only_links'])}): verify the wiki note was not deleted/renamed")
+    for r in result["raw_only_links"][:5]:
+        print(f"  - In {r['source']}: [[{r['target']}]]")
 
     print(f"\n🟡 Contested Pages ({len(result['contested'])}):")
     for c in result["contested"]:

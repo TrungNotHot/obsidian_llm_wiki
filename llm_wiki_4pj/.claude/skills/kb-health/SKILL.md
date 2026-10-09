@@ -22,6 +22,7 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
      *(Replace `<path-to-this-skill>` with this skill's own directory, e.g. `.agents/skills/kb-health`, and add `--json` for machine-readable output).*
    - **Evaluate Output**:
      - Check reported broken `[[...]]` links.
+     - Review "links resolving only to `docs/raw/`": a `[[link]]` whose only match is a raw source usually means the same-named wiki note was deleted or renamed (a raw/ copy would otherwise mask it). Intentional links to raw specs are fine.
      - Check orphan notes in `docs/wiki/` (0 inbound links).
      - Check notes flagged with `contested: true` or `confidence: low`.
      - Check stale notes (>90 days without updates) and oversized pages (>300 lines, `docs/wiki/` notes only; `raw/` and `reports/` are not split).
