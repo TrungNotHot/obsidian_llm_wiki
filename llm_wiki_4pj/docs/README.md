@@ -44,6 +44,6 @@ docs/
 ## 🛠️ Operating Principles
 
 1. **Obsidian is the IDE; the Agent is the Maintainer**: Developers view graph connections, read guides, and explore architecture in Obsidian; AI agents maintain cross-references, update summaries, and log changes.
-2. **Never Answer in Chat, Always Answer in Files**: High-value investigations and architectural syntheses are permanently filed in `reports/` and compounded back into `wiki/concepts/`.
+2. **Never Answer in Chat, Always Answer in Files**: High-value investigations and architectural syntheses are permanently filed in `reports/` and compounded back into `wiki/concepts/`. Quick lookups via `/kb-ask` are the exception: answered in chat, read-only, no files written. Web search (`/kb-ask`, `/kb-report`) happens only when the wiki lacks the answer and always after asking the user; web-sourced content is labeled unverified.
 3. **Immutable Raw Sources**: Content in `raw/` is never modified after ingestion.
 4. **Universal vs Local Separation**: Concepts and entities are partitioned into `universal/` (reusable cross-project engineering assets) and `local/` (project-specific implementations). The `universal/` trees can be exported or symlinked directly to a central General Knowledge Vault.

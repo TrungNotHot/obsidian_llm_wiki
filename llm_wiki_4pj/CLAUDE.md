@@ -81,7 +81,7 @@ Every agent action that reads, writes, or restructures vault content must strict
    - Auditing broken links, orphan notes, and metadata gaps $\rightarrow$ `/kb-health`.
    - Quick lookups answered in chat (read-only, no files written) $\rightarrow$ `/kb-ask`.
    - Deep multi-source investigations and architectural syntheses $\rightarrow$ `/kb-report` ("Never Answer in Chat, Always Answer in Files" — applies to deep analysis; quick lookups via `/kb-ask` may answer in chat).
-   - **Web Search Policy**: `/kb-ask` may search the web only when the wiki lacks the answer, and MUST ask/notify the user before searching; web-sourced content is labeled unverified.
+   - **Web Search Policy**: `/kb-ask` and `/kb-report` may search the web only when the wiki lacks the answer, and MUST ask/notify the user before searching; web-sourced content is labeled unverified.
 
 2. **Baseline Guardrail (`karpathy-guidelines`)**:
    - *Active on every turn*: Think before editing, make surgical changes (do not touch unrelated notes or reformat arbitrary files), and verify integrity (`check_health.py docs`, link validity) before declaring completion (`verification-before-completion`).

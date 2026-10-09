@@ -6,7 +6,7 @@ This directory stores permanent, high-value analytical outputs and architectural
 
 ## 💎 The Golden Principle
 > **"Never Answer in Chat, Always Answer in Files"**
-> Complex architectural questions, deep lineage analyses, or multi-component comparisons must never be lost in transient chat sessions. They are authored as structured, persistent markdown assets here.
+> Complex architectural questions, deep lineage analyses, or multi-component comparisons must never be lost in transient chat sessions. They are authored as structured, persistent markdown assets here. Quick, simple lookups are the exception: `/kb-ask` answers them in chat (read-only, no files written).
 
 ---
 

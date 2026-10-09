@@ -21,7 +21,7 @@ It is structured into two parts:
     - `universal/`: Core compute engines, container platforms, and orchestration engines.
     - `local/`: Specific external data sources, enterprise systems, and integration endpoints.
   - `docs/wiki/easy_read/`: Developer and stakeholder guides organized by architectural layer.
-  - `docs/reports/`: Permanent analytical investigation reports ("Never Answer in Chat, Always Answer in Files").
+  - `docs/reports/`: Permanent analytical investigation reports ("Never Answer in Chat, Always Answer in Files" for deep analysis; quick lookups via `/kb-ask` are answered in chat, read-only).
   - `docs/wiki/_archive/`: Superseded, deprecated, or decommissioned documentation.
 - **File Names**: Lowercase, hyphen- or underscore-separated, no spaces (e.g. `append_on_change_xxhash64.md`, `fact-absence.md`).
 - **Frontmatter**: Every wiki page must begin with YAML frontmatter conforming to the schema below.
