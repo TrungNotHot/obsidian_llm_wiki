@@ -19,8 +19,10 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
    - Scan the last 20 lines of `docs/log.md` to see recent queries or investigations.
 
 2. **Step 1 — Search & Read Context**:
-   - Query across `docs/wiki/` (concepts, entities, and architecture).
+   - Query across `docs/wiki/` (concepts, entities, and architecture): grep keywords/synonyms and `title:`/`tags:` in frontmatter, plus the folder `README.md` catalogs, to find seed notes.
+   - **Traverse embedded references**: from each seed note follow outbound `[[wikilinks]]` (max 3 hops), find backlinks via Grep `\[\[<note-name>` across `docs/wiki/` and `docs/reports/` (prior reports on the topic), read `contradictions:` partners, and open `sources:` files in `docs/raw/` when primary-source detail is needed. Read in full at most ~12 notes, picking the most relevant to the question; if coverage is still thin, start a new traversal from a newly found seed instead of going deeper. Keep a list of visited notes to cite in the report.
    - Cross-check with source code in primary codebase directories (e.g. `src/`, `app/`, `lib/`) when code-level verification is needed.
+   - **Web search (when wiki lacks enough info)**: ASK the user for permission first, stating what is missing. Never search silently. If approved, cite every web-sourced claim with its URL in the report and label it as unverified (not yet in `docs/raw/`); set `confidence: medium` or lower.
 
 3. **Step 2 — Synthesize & Author Report**:
    - Create a new report file: `docs/reports/YYYY-MM-DD-<topic_slug>.md`.
@@ -44,6 +46,7 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
      - **Detailed Technical Analysis**: Technical breakdown, interfaces, data models, or logic flow.
      - **Mermaid Diagrams**: Visual architecture, sequence, or ER diagrams.
      - **Backlinks & References**: Obsidian wikilinks `[[...]]` connecting to relevant concept notes and entities.
+     - **External Sources (required if any web/external info was used)**: a dedicated section listing each external source: URL/site, search query used, access date, and which report claims depend on it. Mark them unverified (not in `raw/`). Omit the section only if no external info was used.
 
 4. **Step 3 — Compounding Loop (File Back to Wiki)**:
    - *Karpathy Principle*: Good answers should compound in the knowledge base, not stay trapped in reports.

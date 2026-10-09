@@ -24,17 +24,14 @@ fi
 echo "🚀 Scaffolding LLM Wiki into: $TARGET_DIR"
 
 # 1. Copy .agents directory (Skills & Plugins)
-echo "📦 Copying .agents (Skills & MCP config)..."
+echo "📦 Copying .agents (Skills)..."
 mkdir -p "$TARGET_DIR/.agents"
 cp -rn "$SCRIPT_DIR/.agents/"* "$TARGET_DIR/.agents/"
 
-# 1b. Claude Code: standalone .claude/skills + .mcp.json
+# 1b. Claude Code: standalone .claude/skills
 echo "📦 Copying .claude (Claude Code skills)..."
 mkdir -p "$TARGET_DIR/.claude"
 cp -rn "$SCRIPT_DIR/.claude/"* "$TARGET_DIR/.claude/"
-if [ -f "$SCRIPT_DIR/.mcp.json" ] && [ ! -e "$TARGET_DIR/.mcp.json" ]; then
-    cp "$SCRIPT_DIR/.mcp.json" "$TARGET_DIR/.mcp.json"
-fi
 [ -f "$SCRIPT_DIR/.agents/.agentignore" ] && [ ! -f "$TARGET_DIR/.agents/.agentignore" ] && cp "$SCRIPT_DIR/.agents/.agentignore" "$TARGET_DIR/.agents/"
 
 # 1c. Copy AGENTS.md workspace guidelines if not present

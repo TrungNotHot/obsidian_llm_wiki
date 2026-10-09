@@ -8,6 +8,15 @@ Kho tài liệu này gồm 2 phần độc lập theo triết lý LLM Wiki của
 
 ---
 
+## Phần 0: Yêu cầu cài đặt của mỗi Vault 
+- **Obsidian Desktop App**: tải tại https://obsidian.md/download.
+- **2 plugin** (có sẵn trong `obsidian_llm_wiki/.obsidian/plugins/`; sau khi mở vault, vào *Settings → Community plugins*, tắt Restricted mode và bật):
+  - `dataview`: truy vấn/hiển thị ghi chú theo frontmatter.
+  - `remotely-save`: đồng bộ vault lên cloud (Optional)
+- **Trình duyệt**: cài extension [Obsidian Web Clipper](https://obsidian.md/clipper) để biến bài viết web thành .md vào `raw/articles/`.
+
+---
+
 ## Phần 1: Dùng `llm_wiki_4pj` (Wiki trong dự án code)
 
 Dùng khi bạn muốn AI ghi chép tài liệu kiến trúc, API và quyết định thiết kế ngay bên cạnh mã nguồn của dự án.
@@ -23,14 +32,15 @@ cp -n CLAUDE.md /duong-dan/toi/du-an-cua-ban/   # Nếu dùng Claude Code
 
 Mở `<du-an>/docs/SCHEMA.md`, tìm **Part 2: Project Domain Configuration** để điền mô tả ngắn và một vài tag nghiệp vụ của dự án (ví dụ: `billing`, `api`, `auth`).
 
-### 2. Bảng 4 Skill dùng trong dự án
+### 2. Bảng 5 Skill dùng trong dự án
 
 Mở terminal tại thư mục gốc của dự án code và gọi các lệnh sau:
 
 | Skill | Cú pháp | Khi nào dùng & Chức năng | Mức suy luận (Effort) | Đầu ra chính |
 |---|---|---|---|---|
 | **Biên dịch tài liệu** | `/kb-compile` | Khi vừa ném tài liệu/spec vào `docs/raw/` (hoặc đưa link URL). AI tự đọc, chia thành các note nhỏ có liên kết `[[...]]`.<br>• Riêng dự án: Lưu vào `local/` (nếu chỉ dùng cho dự án này).<br>• Dùng chung: Lưu vào `universal/` (nếu là pattern có thể tái sử dụng). | 🧠 **High** | `docs/wiki/`, `docs/index.md`, `docs/log.md` |
-| **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). | 🧠 **High** | `docs/reports/<slug>.md` |
+| **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). Nếu wiki thiếu dữ liệu, AI hỏi bạn trước khi tìm web (nguồn web ghi rõ URL, gắn nhãn chưa kiểm chứng). | 🧠 **High** | `docs/reports/<slug>.md` |
+| **Hỏi đáp nhanh** | `/kb-ask <câu hỏi>` | Tra cứu nhanh kiến thức trong `docs/wiki/`, trả lời ngay trong chat (có trích dẫn `[[note]]`), không ghi file. Nếu wiki thiếu, AI **hỏi bạn trước** khi tìm web và gắn nhãn nguồn web là chưa kiểm chứng. | ⚡ **Low** | Trả lời trong chat |
 | **Cập nhật mục lục** | `/kb-index` | Sau khi tạo nhiều note mới hoặc sửa đổi cấu trúc wiki. AI quét lại toàn bộ note và xây lại mục lục, bảng thuật ngữ. | ⚡ **Low** | `docs/index.md` |
 | **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. AI tìm `[[link hỏng]]`, note mồ côi (không có ai trỏ đến), và tài liệu bị lệch (drift) so với code thực tế. | ⚡ **Low** | `docs/wiki/TODO.md` |
 
@@ -54,7 +64,7 @@ Dùng làm kho bách khoa toàn thư cá nhân/công ty, độc lập hoàn toà
    ```
 3. Mở terminal ngay tại `obsidian_llm_wiki/` để gọi AI agent.
 
-### 2. Bảng 5 Skill dùng trong Kho trung tâm
+### 2. Bảng 6 Skill dùng trong Kho trung tâm
 
 Mở terminal tại thư mục `obsidian_llm_wiki/` và gọi các lệnh sau:
 
@@ -62,7 +72,8 @@ Mở terminal tại thư mục `obsidian_llm_wiki/` và gọi các lệnh sau:
 |---|---|---|---|---|
 | **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, tự động ẩn biến/đường dẫn nội bộ nhạy cảm và gom về kho trung tâm. | 🧠 **High** | `raw/articles/<slug>.md` |
 | **Biên dịch kiến thức** | `/kb-compile` | Khi có bài viết/sách mới ném vào `raw/articles/` hoặc sau khi vừa chạy `/kb-colluni`. AI biến nội dung thô thành các note nguyên tử tại `concepts/` và `entities/`. | 🧠 **High** | `wiki/`, `index.md`, `log.md` |
-| **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn. | 🧠 **High** | `reports/<slug>.md` |
+| **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn. Nếu wiki thiếu dữ liệu, AI hỏi bạn trước khi tìm web (nguồn web ghi rõ URL, gắn nhãn chưa kiểm chứng). | 🧠 **High** | `reports/<slug>.md` |
+| **Hỏi đáp nhanh** | `/kb-ask <câu hỏi>` | Tra cứu nhanh kiến thức trong wiki, trả lời ngay trong chat (có trích dẫn `[[note]]`), không ghi file. Nếu wiki thiếu, AI **hỏi bạn trước** khi tìm web và gắn nhãn nguồn web là chưa kiểm chứng. | ⚡ **Low** | Trả lời trong chat |
 | **Cập nhật mục lục** | `/kb-index` | Xây dựng lại toàn bộ cây danh mục kiến trúc, glossary thuật ngữ và topic map của toàn vault. | ⚡ **Low** | `index.md` |
 | **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter. | ⚡ **Low** | `wiki/TODO.md` |
 
@@ -115,7 +126,7 @@ Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinki
 | Nhóm tác vụ | Skill | Model & Mức Effort khuyến nghị | Cách thiết lập thực tế |
 |---|---|---|---|
 | **Yêu cầu suy luận cao** | `/kb-compile`<br>`/kb-report`<br>`/kb-colluni` | 🧠 **$\ge$ Sonnet 5.5 (medium)**<br>(Tối thiểu Sonnet 5.5 mức Medium, hoặc High) | Thiết lập trong chat / CLI:<br>`/model sonnet`<br>`/effort medium` hoặc `/effort high` |
-| **Cấu trúc & Định dạng** | `/kb-index`<br>`/kb-health` | ⚡ **$\le$ Sonnet 5.5 (low) hoặc Haiku**<br>(Dùng Haiku hoặc Sonnet 5.5 mức Low / tắt Thinking) | Thiết lập trong chat / CLI:<br>`/model haiku`<br>hoặc `/model sonnet` kèm `/effort low` |
+| **Cấu trúc & Định dạng** | `/kb-index`<br>`/kb-health`<br>`/kb-ask` | ⚡ **$\le$ Sonnet 5.5 (low) hoặc Haiku**<br>(Dùng Haiku hoặc Sonnet 5.5 mức Low / tắt Thinking) | Thiết lập trong chat / CLI:<br>`/model haiku`<br>hoặc `/model sonnet` kèm `/effort low` |
 
 ---
 
@@ -127,8 +138,9 @@ Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinki
    - **`/kb-colluni`**: Đòi hỏi khả năng trừu tượng hóa cực tốt để biến code cụ thể của dự án thành bài học tổng quát, đồng thời nhận diện và làm sạch triệt để các dữ liệu nhạy cảm nội bộ.
    - *→ Mức suy luận từ Medium trở lên giúp model có đủ không gian "tư duy" để xử lý và liên kết dữ liệu phức tạp mà không bị ảo giác.*
 
-2. **Tại sao chỉ cần $\le$ Sonnet 5.5 (low) hoặc Haiku cho Index, Health?**:
+2. **Tại sao chỉ cần $\le$ Sonnet 5.5 (low) hoặc Haiku cho Index, Health, Ask?**:
    - Đây là các tác vụ máy móc: chạy script kiểm tra định dạng (`check_health.py`), quét chuỗi regex tìm link `[[...]]` gãy, gom danh sách note mồ côi và sắp xếp lại cây mục lục theo mẫu có sẵn.
+   - **`/kb-ask`**: Chỉ tra cứu và trích dẫn lại nội dung có sẵn trong wiki (theo từ khóa và link `[[...]]`), không cần suy luận sâu. Câu hỏi cần tổng hợp nhiều nguồn thì dùng `/kb-report`.
    - *→ Dùng Haiku hoặc Sonnet 5.5 ở mức Low giúp hoàn thành ngay trong vài giây, tiết kiệm tối đa chi phí token mà kết quả vẫn chính xác 100%.*
 
 ---
@@ -162,6 +174,7 @@ Thư mục `raw/` là **nguồn sự thật bất biến (Immutable Source)**. F
   - Đọc tài liệu gốc trong `raw/`.
   - Đọc source code dự án (với `llm_wiki_4pj`) để đối chiếu và phát hiện độ lệch (code-doc drift).
   - Đọc `SCHEMA.md` để tuân thủ quy tắc tag, format và ngưỡng chia tách file.
+  - Tìm trên web (`/kb-ask`, `/kb-report`) **chỉ khi wiki thiếu thông tin và sau khi hỏi bạn**; nguồn web luôn ghi rõ URL và gắn nhãn chưa kiểm chứng. Muốn giữ lâu dài thì clip vào `raw/articles/` rồi `/kb-compile`.
 - **AI VIẾT & DUY TRÌ ở đâu?**:
   - `wiki/` (`concepts/`, `entities/`, `easy_read/`, `_archive/`): AI tự tạo, liên kết chéo `[[...]]`, cập nhật và lưu trữ.
   - `index.md`: AI tự động thêm/bớt mục lục và bảng thuật ngữ.

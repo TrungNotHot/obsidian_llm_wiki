@@ -37,8 +37,20 @@ llm_wiki/
 
 ---
 
+## 🧰 Skills
+
+- `/kb-compile`: Ingests `raw/` sources into atomic notes in `wiki/`.
+- `/kb-colluni`: Collects universal concepts from project vaults into `raw/articles/`.
+- `/kb-ask`: Quick read-only Q&A over the wiki, answered in chat (asks before any web search).
+- `/kb-report`: Deep multi-source investigation written to `reports/`.
+- `/kb-index`: Rebuilds `index.md`, glossary, and concept maps.
+- `/kb-health`: Audits broken links, orphans, and metadata gaps.
+
+---
+
 ## 🛠️ Operating Principles
 
 1. **Obsidian is the IDE; the Agent is the Maintainer**: Developers view graph connections, read guides, and explore knowledge in Obsidian; AI agents maintain cross-references, update summaries, and log changes.
-2. **Never Answer in Chat, Always Answer in Files**: High-value investigations and architectural syntheses are permanently filed in `reports/` and compounded back into `wiki/concepts/`.
-3. **Immutable Raw Sources**: Content in `raw/` is never modified after creation.
+2. **Never Answer in Chat, Always Answer in Files**: High-value investigations and architectural syntheses are permanently filed in `reports/` and compounded back into `wiki/concepts/`. Quick lookups via `/kb-ask` are the exception: answered in chat, read-only, no files written.
+3. **Web Search Only When Needed**: `/kb-ask` and `/kb-report` search the web only when the wiki lacks the answer, and always ask the user first; web-sourced content is labeled unverified.
+4. **Immutable Raw Sources**: Content in `raw/` is never modified after creation.

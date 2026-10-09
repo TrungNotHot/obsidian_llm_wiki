@@ -16,4 +16,4 @@ One repository containing two separate wiki projects, each with its own structur
 Shared remote: `https://github.com/TrungNotHot/obsidian_llm_wiki`.
 Both projects are regular directories in the same repository, not submodules.
 The only `.git` directory is at the repository root. Each project has its own `.gitignore`; there is no root `.gitignore`.
-Files matching `.env*` stay local. MCP configuration files are versioned and reference environment variables.
+Files matching `.env*` stay local.

@@ -11,12 +11,13 @@ Designed for AI pair-programming assistants (Antigravity, Claude Code, Cursor, C
 1. **3-Layer Compounding Architecture**:
    - `docs/raw/`: Immutable reference documents, web clippings, and architecture specs with SHA-256 drift detection.
    - `docs/wiki/`: Living system architecture, maintained and kept in sync with code by AI agents.
-   - `docs/reports/`: Permanent deep reports following the principle: *"Never Answer in Chat, Always Answer in Files"*.
+   - `docs/reports/`: Permanent deep reports following the principle: *"Never Answer in Chat, Always Answer in Files"* (for deep analysis; quick lookups via `/kb-ask` are answered in chat).
 2. **Symmetrical `universal/` vs `local/` Partitioning**:
    - `docs/wiki/concepts/universal/` & `docs/wiki/entities/universal/`: Core architectural patterns and platform engines. These can be exported, symlinked, or synced to a central **General Knowledge Base**.
    - `docs/wiki/concepts/local/` & `docs/wiki/entities/local/`: Project-specific domain rules, endpoints, and mechanisms.
 3. **Turnkey AI Agent Skills**:
    - `/kb-compile`: Ingests documentation or URLs into atomic notes.
+   - `/kb-ask`: Quick read-only Q&A over the wiki, answered in chat (asks before any web search).
    - `/kb-report`: Investigates complex topics and outputs structured markdown reports.
    - `/kb-index`: Maintains `docs/index.md` master catalog and glossary.
    - `/kb-health`: Audits broken wikilinks, orphan notes, stale content, and code-doc drift.
@@ -35,8 +36,7 @@ llm_wiki_4pj/
 ├── .gitignore
 │
 ├── .agents/                   # AI Agent Configuration & Skills
-│   ├── mcp_config.json        # MCP definition for Obsidian Local REST API
-│   └── skills/                # Standalone skills (kb-compile, kb-health, kb-index, kb-report)
+│   └── skills/                # Standalone skills (kb-compile, kb-health, kb-index, kb-report, kb-ask)
 │
 └── docs/                      # Standard documentation scaffold
     ├── README.md              # Documentation orientation guide
