@@ -19,12 +19,20 @@ def audit_vault(vault_path: Path):
         sys.exit(1)
 
     wiki_dir = vault_path / "wiki"
+
+    def visible(f: Path) -> bool:
+        # Skip hidden files/dirs (.claude, .agents, .obsidian) relative to the vault.
+        return not any(part.startswith(".") for part in f.relative_to(vault_path).parts)
+
     md_files = [
         f for f in vault_path.glob("**/*.md")
-        if not f.name.startswith(".") and "_archive" not in f.parts
+        if visible(f) and "_archive" not in f.parts
     ]
 
+    # Wikilinks resolve by note name (any folder, incl. raw/ specs); attachments (![[img.png]])
+    # resolve against non-md files by name.
     all_stems = {f.stem: f for f in md_files}
+    attachments = {f.name for f in vault_path.glob("**/*") if f.is_file() and f.suffix != ".md" and visible(f)}
     inbound = {f.stem: 0 for f in wiki_dir.glob("**/*.md") if not f.name.startswith(".")} if wiki_dir.exists() else {}
 
     broken_links = []
@@ -44,8 +52,8 @@ def audit_vault(vault_path: Path):
         rel_path = f.relative_to(vault_path).as_posix()
         line_count = len(raw.splitlines())
 
-        # Check page size threshold (>300 lines)
-        if line_count > 300 and not f.name.startswith("index") and not f.name.startswith("TODO"):
+        # Check page size threshold (>300 lines): wiki/ notes only (raw/ is immutable, reports are permanent)
+        if line_count > 300 and rel_path.startswith("wiki/") and not f.name.startswith("TODO"):
             oversized_pages.append({"file": rel_path, "lines": line_count})
 
         # Parse YAML frontmatter
@@ -76,6 +84,8 @@ def audit_vault(vault_path: Path):
 
         for link in link_pat.findall(clean):
             target = Path(link.strip()).name
+            if target in attachments:
+                continue
             if target in all_stems:
                 if target in inbound:
                     inbound[target] += 1

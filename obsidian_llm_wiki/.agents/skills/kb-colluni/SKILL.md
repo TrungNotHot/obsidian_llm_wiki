@@ -20,6 +20,7 @@ Rather than performing a mechanical file copy, the AI agent uses **semantic reas
 - **`src_vault` (REQUIRED — Must Prompt User if Missing)**:
   - Absolute or relative path to the source project repository or vault root (e.g. `/home/tdtr/workspace/code/hr-scorecard` or `./docs`).
   - **MANDATORY**: If the user invokes `/kb-colluni` without explicitly providing `src_vault`, the agent **MUST STOP and ASK THE USER** for the source vault path before proceeding. Do NOT assume or guess the source vault path.
+- **Source `.agentignore`**: if `src_vault` (or its repo root) has a `.agentignore`, read it and NEVER read or extract any path it matches (secrets, credentials, env files), even if the catalog lists it.
 - **`dest_vault` (AUTOMATIC DEFAULT)**:
   - Path to the destination General Knowledge Vault.
   - **DEFAULT**: Automatically defaults to the current active vault directory (the root of `obsidian_llm_wiki`). The user does NOT need to provide this unless explicitly overriding it.
@@ -119,7 +120,7 @@ When `/kb-colluni` is triggered:
    - **Inspect Master Catalog**: Read `<src_vault>/docs/index.md` (or `<src_vault>/index.md`) to extract the list of Universal Concepts and Universal Entities directly from the master index.
    - **Cross-check Directory Catalogs**: Read `<src_vault>/docs/wiki/concepts/README.md` and `<src_vault>/docs/wiki/entities/README.md` to confirm the scope and summary of each item.
    - **Fallback**: If `index.md` is absent, scan convention folders (`wiki/concepts/universal/`, `wiki/entities/universal/`) directly.
-   - Present the identified universal candidate list to the user (file names, inferred topics, source locations).
+   - Present the identified universal candidate list to the user (file names, inferred topics, source locations) and **STOP until the user confirms** which items to harvest. If the confirmed set is **10 or more** files, restate the count and destination before writing.
 
 3. **Step 2 — Semantic Read & Reference Sanitization**:
    - For each file, read the full content.
@@ -129,6 +130,7 @@ When `/kb-colluni` is triggered:
 
 4. **Step 3 — Distillation & File Generation**:
    - Compute `sha256` hash of the sanitized body.
+   - **Check the destination first**: if `dest_vault/raw/articles/<kebab-case-slug>.md` already exists, compare its stored `sha256` with the new one. *Identical*: skip (already harvested). *Different*: do NOT overwrite (raw is immutable); report it as source drift and ask the user whether to save under a new dated slug.
    - Construct standard frontmatter (`source_vault`, `source_file`, `ingested`, `sha256`, `tags`).
    - Write the resulting markdown file to `dest_vault/raw/articles/<kebab-case-slug>.md`.
 

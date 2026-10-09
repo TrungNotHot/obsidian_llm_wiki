@@ -48,6 +48,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - Identify core concepts, entities, architectural patterns, and business rules.
    - **Page Thresholds** (per `SCHEMA.md`): Only create a dedicated page if an entity/concept appears in $\ge 2$ sources OR is central to this source. Avoid creating clutter for passing mentions.
    - For pages reaching >300 lines, decompose into sub-topics.
+   - **Find related existing pages (before creating or editing)**: grep `wiki/` for each candidate concept/entity name, synonyms, and `tags:`/`title:` in frontmatter (not only `index.md`) and read the matches. For each page you will edit, also read the pages it links to via `[[wikilinks]]` (1 hop) to check for contradictions and to find link targets. Update an existing page instead of creating a near-duplicate. If this finds **10 or more** affected pages, apply the Mass-Update Guardrail below.
    - **Mass-Update Guardrail**: If the planned ingestion will touch **10 or more** existing wiki pages, summarize the affected notes and confirm the update scope with the user before applying edits.
 
 4. **Step 3 — Update or Create Pages with Contradiction Handling**:

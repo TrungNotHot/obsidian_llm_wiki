@@ -24,7 +24,7 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
      - Check reported broken `[[...]]` links.
      - Check orphan notes in `wiki/` (0 inbound links).
      - Check notes flagged with `contested: true` or `confidence: low`.
-     - Check stale notes (>90 days without updates) and oversized pages (>300 lines).
+     - Check stale notes (>90 days without updates) and oversized pages (>300 lines, `wiki/` notes only; `raw/` and `reports/` are not split).
    - The script is fast but blind to semantic issues — it NEVER replaces Layer 2 below.
   - **Clipper author-link policy**: Obsidian Web Clipper writes `author: "[[name]]"` wikilinks in `raw/` frontmatter. These are never real links — normalize to plain text (`author: "name"`) on sight without asking. The script already excludes frontmatter from link scanning, so this is a silent normalization, not a broken-link fix.
 
@@ -34,7 +34,7 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
    - **Quality signals**: surface `confidence: low` pages and single-source pages with no confidence field.
    - **Source drift**: for each `raw/` file with `sha256:` frontmatter, recompute the body hash and flag mismatches (raw/ is immutable).
    - **Contradiction review**: find pages sharing tags/entities with conflicting claims; read the candidates and flag genuine conflicts per the `SCHEMA.md` contradiction policy (script regex cannot do this).
-   - **Code vs doc drift**: compare active codebase components, modules, or data contracts against `wiki/entities/`; flag modules with no matching entity page.
+   - **Code vs doc drift**: compare active codebase components, modules, or data contracts against `wiki/entities/`; flag modules with no matching entity page. Not applicable to a vault with no codebase (e.g. this central vault): record it as "N/A: no codebase" in `log.md` instead of skipping silently.
    - **Log rotation**: if `log.md` exceeds 500 entries, rotate to `log-YYYY.md` and start fresh.
    - If any check is skipped, state which one and why in `log.md` — silent skipping is not allowed.
 
