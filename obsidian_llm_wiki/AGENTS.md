@@ -83,7 +83,7 @@ Every agent action that reads, writes, or restructures vault content must strict
 3. **Immutable Raw Layer (`raw/`)**: Never modify raw sources after creation. Raw clips must include `source_url`, `ingested`, and `sha256` hash. Author links in raw clips are normalized to plain text to avoid orphan stub creation.
 4. **Page Thresholds & Decompositions**:
    - Create a page only when a concept/entity appears in $\ge 2$ sources or is the central topic of an approved spec.
-   - When a note exceeds **200 lines**, decompose into focused sub-topic notes linked back to a parent overview.
+   - When a note exceeds **300 lines**, decompose into focused sub-topic notes linked back to a parent overview.
    - **Mass-Update Guardrail**: If an operation modifies **10 or more** wiki pages, summarize the planned changes and ask for user confirmation before editing.
 5. **Contradiction Policy**: When incoming information conflicts with existing knowledge, document both sides with source citations, set `contested: true`, list contradictions, and log in `log.md` and `wiki/TODO.md`.
 6. **Logging & Catalog Integrity**: Every compilation (`/kb-compile`), indexing (`/kb-index`), health audit (`/kb-health`), report (`/kb-report`), or archiving action MUST append to `log.md` and update `index.md`.

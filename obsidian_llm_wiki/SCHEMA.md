@@ -68,7 +68,7 @@ sha256: <hex-digest-of-source-file-or-content>
 ## Page Thresholds & Safety Gates
 - **Create Page**: When an entity, system component, or architectural concept appears in $\ge 2$ sources OR is the primary focus of an approved design spec/source document.
 - **Do Not Create**: Passing mentions, transient error logs, or minor internal code helper functions.
-- **Split Page**: When any page exceeds **200 lines**, decompose it into focused sub-topic pages and link them back to a parent overview.
+- **Split Page**: When any page exceeds **300 lines**, decompose it into focused sub-topic pages and link them back to a parent overview.
 - **Mass-Update Guardrail**: If an ingest or refactor would modify **10 or more** existing wiki pages, the agent must summarize the planned modifications and request user confirmation before proceeding.
 - **Archive Page**: When an architecture, specification, or component is decommissioned or replaced, move it to `wiki/_archive/`.
 

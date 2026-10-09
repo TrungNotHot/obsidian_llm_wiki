@@ -44,8 +44,8 @@ def audit_vault(vault_path: Path):
         rel_path = f.relative_to(vault_path).as_posix()
         line_count = len(raw.splitlines())
 
-        # Check page size threshold (>200 lines)
-        if line_count > 200 and not f.name.startswith("index") and not f.name.startswith("TODO"):
+        # Check page size threshold (>300 lines)
+        if line_count > 300 and not f.name.startswith("index") and not f.name.startswith("TODO"):
             oversized_pages.append({"file": rel_path, "lines": line_count})
 
         # Parse YAML frontmatter
@@ -132,7 +132,7 @@ def main():
     for o in result["orphans"][:10]:
         print(f"  - [[{o}]]")
 
-    print(f"\nℹ️  Oversized Pages (>200 lines) ({len(result['oversized'])}):")
+    print(f"\nℹ️  Oversized Pages (>300 lines) ({len(result['oversized'])}):")
     for p in result["oversized"][:5]:
         print(f"  - {p['file']} ({p['lines']} lines)")
 

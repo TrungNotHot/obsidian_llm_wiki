@@ -77,6 +77,45 @@ Mở terminal tại thư mục `obsidian_llm_wiki/` và gọi các lệnh sau:
 | **Cập nhật mục lục** | `/kb-index` | Xây dựng lại toàn bộ cây danh mục kiến trúc, glossary thuật ngữ và topic map của toàn vault. | ⚡ **Low** | `index.md` |
 | **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter. | ⚡ **Low** | `wiki/TODO.md` |
 
+
+### 3. Tùy chỉnh skill (ví dụ: số hop tra cứu)
+
+Skill chỉ là file Markdown (`.claude/skills/<tên>/SKILL.md`, bản sao ở `.agents/skills/`), nên bạn có thể **nhờ LLM sửa trực tiếp** để đổi hành vi, không cần code.
+
+**Số hop** là số lần "nhảy" qua `[[wikilink]]` từ note tìm thấy đầu tiên khi tra cứu. Mặc định theo loại câu hỏi:
+
+| Loại câu hỏi | `/kb-ask` | `/kb-report` |
+|---|---|---|
+| Tra cứu một sự kiện (fact lookup) | 1 hop | 1 hop |
+| Quan hệ giữa các note, tóm tắt | 2 hops | 2 hops |
+| Suy luận nhiều bước (multi-hop) | Không dùng (gợi ý chuyển `/kb-report`) | 3 hops |
+
+Muốn đổi, ra lệnh cho LLM, ví dụ:
+```text
+Sửa skill kb-ask: cho phép tối đa 3 hop với câu hỏi multi-hop.
+Sửa skill kb-report: fact lookup chỉ 1 hop, các loại khác tối đa 2 hop.
+```
+Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/` để không lệch nhau. Hop càng cao càng tốn token và dễ đọc lan sang note ít liên quan.
+
+**Các giá trị cấu hình khác có thể nhờ LLM đổi** (ghi rõ file cần sửa; nếu một giá trị xuất hiện ở nhiều file thì phải đổi đủ để không lệch):
+
+| Cấu hình | Mặc định | Nằm ở đâu |
+|---|---|---|
+| Số note đọc đầy đủ tối đa (`/kb-ask`) | ~6 note | `kb-ask/SKILL.md` |
+| Số note đọc đầy đủ tối đa (`/kb-report`) | ~12 note | `kb-report/SKILL.md` |
+| Có/không cho tìm web, và hỏi trước khi tìm | Chỉ khi wiki thiếu, luôn hỏi trước | `kb-ask/SKILL.md`, `kb-report/SKILL.md`, `CLAUDE.md`/`AGENTS.md` (mục Web Search Policy) |
+| Ngưỡng note "cũ" (stale) | > 90 ngày | `kb-health/SKILL.md` **và** `kb-health/scripts/check_health.py` |
+| Ngưỡng tách note quá dài | > 300 dòng | `kb-compile/SKILL.md`, `kb-health/SKILL.md`, `kb-health/scripts/check_health.py`, `SCHEMA.md`, `CLAUDE.md`/`AGENTS.md` |
+| Điều kiện tạo note mới | Khái niệm xuất hiện trong ≥ 2 nguồn | `kb-compile/SKILL.md`, `SCHEMA.md` |
+| Số link ra tối thiểu mỗi note | 2 | `SCHEMA.md`, `CLAUDE.md` |
+| Xoay vòng `log.md` | Khi quá 500 mục | `kb-health/SKILL.md`, `SCHEMA.md` |
+| Ngưỡng chia mục trong `index.md` | > 50 mục / mục | `SCHEMA.md` |
+| Tạo `topic-map.md` | Khi quá 200 trang | `SCHEMA.md` |
+| Xác nhận trước khi sửa hàng loạt | ≥ 10 trang | `CLAUDE.md` / `AGENTS.md` |
+| Số dòng cuối `log.md` đọc khi khởi động | 20 dòng (`kb-compile`: 20–30) | `kb-report/SKILL.md`, `kb-compile/SKILL.md` |
+
+Ví dụ: `Sửa kb-health: đổi ngưỡng stale từ 90 ngày thành 180 ngày (cả SKILL.md và check_health.py).`
+
 ---
 
 ## Phần 3: Cách 2 repo tương tác và trao đổi tri thức

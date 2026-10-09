@@ -30,7 +30,7 @@ llm_wiki/
 
 ## 🧭 Master Navigation Files
 
-- **`SCHEMA.md`**: The internal constitution governing naming conventions, tag taxonomy, page thresholds (split >200 lines), contradiction policy, and quality signals (`confidence`, `contested`).
+- **`SCHEMA.md`**: The internal constitution governing naming conventions, tag taxonomy, page thresholds (split >300 lines), contradiction policy, and quality signals (`confidence`, `contested`).
 - **`index.md`**: Master catalog organizing every living note, architecture guide, and deep report by functional domain.
 - **`log.md`**: Chronological audit trail tracking all compilations, report generations, and vault health audits.
 - **`wiki/TODO.md`**: Actionable integrity backlog for broken links, code-doc drift, and content gaps.

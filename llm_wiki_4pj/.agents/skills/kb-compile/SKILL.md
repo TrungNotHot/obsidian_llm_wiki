@@ -47,7 +47,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
 3. **Step 2 — Distill & Check Thresholds**:
    - Identify core concepts, entities, architectural patterns, and business rules.
    - **Page Thresholds** (per `docs/SCHEMA.md`): Only create a dedicated page if an entity/concept appears in $\ge 2$ sources OR is central to this source. Avoid creating clutter for passing mentions.
-   - For pages reaching >200 lines, decompose into sub-topics.
+   - For pages reaching >300 lines, decompose into sub-topics.
    - **Mass-Update Guardrail**: If the planned ingestion will touch **10 or more** existing wiki pages, summarize the affected notes and confirm the update scope with the user before applying edits.
 
 4. **Step 3 — Update or Create Pages with Contradiction Handling**:
