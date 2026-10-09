@@ -29,10 +29,10 @@ Mở terminal tại thư mục gốc của dự án code và gọi các lệnh s
 
 | Skill | Cú pháp | Khi nào dùng & Chức năng | Mức suy luận (Effort) | Đầu ra chính |
 |---|---|---|---|---|
-| **Biên dịch tài liệu** | `/kb-compile` | Khi vừa ném tài liệu/spec vào `docs/raw/` (hoặc đưa link URL). AI tự đọc, chia thành các note nhỏ có liên kết `[[...]]`.<br>• Riêng dự án: Lưu vào `local/` (nếu chỉ dùng cho dự án này).<br>• Dùng chung: Lưu vào `universal/` (nếu là pattern có thể tái sử dụng). | 🧠 **Cao (High Reasoning)** | `docs/wiki/`, `docs/index.md`, `docs/log.md` |
-| **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). | 🧠 **Cao (High Reasoning)** | `docs/reports/<slug>.md` |
-| **Cập nhật mục lục** | `/kb-index` | Sau khi tạo nhiều note mới hoặc sửa đổi cấu trúc wiki. AI quét lại toàn bộ note và xây lại mục lục, bảng thuật ngữ. | ⚡ **Thấp (Fast / Low)** | `docs/index.md` |
-| **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. AI tìm `[[link hỏng]]`, note mồ côi (không có ai trỏ đến), và tài liệu bị lệch (drift) so với code thực tế. | ⚡ **Thấp (Fast / Low)** | `docs/wiki/TODO.md` |
+| **Biên dịch tài liệu** | `/kb-compile` | Khi vừa ném tài liệu/spec vào `docs/raw/` (hoặc đưa link URL). AI tự đọc, chia thành các note nhỏ có liên kết `[[...]]`.<br>• Riêng dự án: Lưu vào `local/` (nếu chỉ dùng cho dự án này).<br>• Dùng chung: Lưu vào `universal/` (nếu là pattern có thể tái sử dụng). | 🧠 **High** | `docs/wiki/`, `docs/index.md`, `docs/log.md` |
+| **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). | 🧠 **High** | `docs/reports/<slug>.md` |
+| **Cập nhật mục lục** | `/kb-index` | Sau khi tạo nhiều note mới hoặc sửa đổi cấu trúc wiki. AI quét lại toàn bộ note và xây lại mục lục, bảng thuật ngữ. | ⚡ **Low** | `docs/index.md` |
+| **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. AI tìm `[[link hỏng]]`, note mồ côi (không có ai trỏ đến), và tài liệu bị lệch (drift) so với code thực tế. | ⚡ **Low** | `docs/wiki/TODO.md` |
 
 ---
 
@@ -60,11 +60,11 @@ Mở terminal tại thư mục `obsidian_llm_wiki/` và gọi các lệnh sau:
 
 | Skill | Cú pháp | Khi nào dùng & Chức năng | Mức suy luận (Effort) | Đầu ra chính |
 |---|---|---|---|---|
-| **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, tự động ẩn biến/đường dẫn nội bộ nhạy cảm và gom về kho trung tâm. | 🧠 **Cao (High Reasoning)** | `raw/articles/<slug>.md` |
-| **Biên dịch kiến thức** | `/kb-compile` | Khi có bài viết/sách mới ném vào `raw/articles/` hoặc sau khi vừa chạy `/kb-colluni`. AI biến nội dung thô thành các note nguyên tử tại `concepts/` và `entities/`. | 🧠 **Cao (High Reasoning)** | `wiki/`, `index.md`, `log.md` |
-| **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn. | 🧠 **Cao (High Reasoning)** | `reports/<slug>.md` |
-| **Cập nhật mục lục** | `/kb-index` | Xây dựng lại toàn bộ cây danh mục kiến trúc, glossary thuật ngữ và topic map của toàn vault. | ⚡ **Thấp (Fast / Low)** | `index.md` |
-| **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter. | ⚡ **Thấp (Fast / Low)** | `wiki/TODO.md` |
+| **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, tự động ẩn biến/đường dẫn nội bộ nhạy cảm và gom về kho trung tâm. | 🧠 **High** | `raw/articles/<slug>.md` |
+| **Biên dịch kiến thức** | `/kb-compile` | Khi có bài viết/sách mới ném vào `raw/articles/` hoặc sau khi vừa chạy `/kb-colluni`. AI biến nội dung thô thành các note nguyên tử tại `concepts/` và `entities/`. | 🧠 **High** | `wiki/`, `index.md`, `log.md` |
+| **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn. | 🧠 **High** | `reports/<slug>.md` |
+| **Cập nhật mục lục** | `/kb-index` | Xây dựng lại toàn bộ cây danh mục kiến trúc, glossary thuật ngữ và topic map của toàn vault. | ⚡ **Low** | `index.md` |
+| **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter. | ⚡ **Low** | `wiki/TODO.md` |
 
 ---
 
@@ -110,22 +110,26 @@ docs/wiki/.../universal/             docs/wiki/.../universal/
 
 Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinking cao. Tối ưu hiệu quả và chi phí như sau:
 
-### 1. Nhóm tác vụ yêu cầu suy luận cao (High Reasoning Effort)
-> **Áp dụng cho**: `/kb-compile`, `/kb-report`, `/kb-colluni`
+### 💡 Bảng cấu hình trực quan (Ví dụ Sonnet 5.5 vs Haiku)
 
-- **Cấu hình đề xuất**: Sử dụng model mạnh (ví dụ: Claude Sonnet, Gemini Pro, GPT-4o/o-series) và **bật mức suy luận cao (Thinking / Reasoning: High)**.
-- **Vì sao cần suy luận cao?**:
-  - **`/kb-compile`**: Cần đọc hiểu đa tầng, trích xuất đúng bản chất khái niệm (atomic concept), kiểm tra xem có mâu thuẫn (contradiction) với các note cũ hay không.
-  - **`/kb-report`**: Cần điều tra sâu xuyên suốt repo/codebase, liên kết nhiều giả thuyết logic để giải bài toán kỹ thuật phức tạp.
-  - **`/kb-colluni`**: Đòi hỏi khả năng trừu tượng hóa cực tốt để biến code cụ thể của dự án thành bài học tổng quát, đồng thời nhận diện và làm sạch triệt để các dữ liệu nhạy cảm nội bộ.
+| Nhóm tác vụ | Skill | Model & Mức Effort khuyến nghị | Cách thiết lập thực tế |
+|---|---|---|---|
+| **Yêu cầu suy luận cao** | `/kb-compile`<br>`/kb-report`<br>`/kb-colluni` | 🧠 **$\ge$ Sonnet 5.5 (medium)**<br>(Tối thiểu Sonnet 5.5 mức Medium, hoặc High) | Thiết lập trong chat / CLI:<br>`/model sonnet`<br>`/effort medium` hoặc `/effort high` |
+| **Cấu trúc & Định dạng** | `/kb-index`<br>`/kb-health` | ⚡ **$\le$ Sonnet 5.5 (low) hoặc Haiku**<br>(Dùng Haiku hoặc Sonnet 5.5 mức Low / tắt Thinking) | Thiết lập trong chat / CLI:<br>`/model haiku`<br>hoặc `/model sonnet` kèm `/effort low` |
 
-### 2. Nhóm tác vụ cấu trúc & định dạng (Không cần suy luận cao)
-> **Áp dụng cho**: `/kb-index`, `/kb-health`
+---
 
-- **Cấu hình đề xuất**: Sử dụng model nhanh, tiết kiệm (ví dụ: Gemini Flash, Claude Haiku, GPT-4o-mini) với **mức thinking thấp hoặc tắt**.
-- **Vì sao không cần suy luận cao?**:
-  - Đây là các tác vụ máy móc: chạy script kiểm tra định dạng (`check_health.py`), quét chuỗi regex tìm link `[[...]]` gãy, gom danh sách note mồ côi và sắp xếp lại cây mục lục theo mẫu có sẵn.
-  - Dùng model mạnh cho 2 skill này sẽ gây lãng phí token và thời gian chờ đợi.
+### Chi tiết vì sao chọn cấu hình này:
+
+1. **Tại sao cần $\ge$ Sonnet 5.5 (medium) cho Compile, Report, Colluni?**:
+   - **`/kb-compile`**: Cần đọc hiểu đa tầng, bóc tách đúng bản chất khái niệm (atomic concept), kiểm tra xem có mâu thuẫn (contradiction) với các note cũ hay không.
+   - **`/kb-report`**: Cần điều tra sâu xuyên suốt repo/codebase, liên kết nhiều giả thuyết logic để giải bài toán kỹ thuật phức tạp.
+   - **`/kb-colluni`**: Đòi hỏi khả năng trừu tượng hóa cực tốt để biến code cụ thể của dự án thành bài học tổng quát, đồng thời nhận diện và làm sạch triệt để các dữ liệu nhạy cảm nội bộ.
+   - *→ Mức suy luận từ Medium trở lên giúp model có đủ không gian "tư duy" để xử lý và liên kết dữ liệu phức tạp mà không bị ảo giác.*
+
+2. **Tại sao chỉ cần $\le$ Sonnet 5.5 (low) hoặc Haiku cho Index, Health?**:
+   - Đây là các tác vụ máy móc: chạy script kiểm tra định dạng (`check_health.py`), quét chuỗi regex tìm link `[[...]]` gãy, gom danh sách note mồ côi và sắp xếp lại cây mục lục theo mẫu có sẵn.
+   - *→ Dùng Haiku hoặc Sonnet 5.5 ở mức Low giúp hoàn thành ngay trong vài giây, tiết kiệm tối đa chi phí token mà kết quả vẫn chính xác 100%.*
 
 ---
 
