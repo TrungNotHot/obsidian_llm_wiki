@@ -23,9 +23,9 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - **If a binary document (`.pdf`, `.docx`, `.pptx`, `.xlsx`, images) is provided or added to `raw/binary/`**:
      - Convert the binary source into clean Markdown via the helper script:
        ```bash
-       uv run --with "markitdown[all]" python3 .claude/skills/kb-compile/scripts/parse_document.py <path_to_binary_file>
+       uv run --with "markitdown[all]" python3 .agents/scripts/parse_document.py <path_to_binary_file>
        # Or scan all binary files:
-       uv run --with "markitdown[all]" python3 .claude/skills/kb-compile/scripts/parse_document.py
+       uv run --with "markitdown[all]" python3 .agents/scripts/parse_document.py
        ```
      - The script automatically handles SHA-256 caching, prevents duplicate conversion, and outputs to `raw/articles/<slug>.md`.
      - Read the generated `raw/articles/<slug>.md` in full to proceed with distillation.

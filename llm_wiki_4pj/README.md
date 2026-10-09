@@ -36,6 +36,7 @@ llm_wiki_4pj/
 ├── .gitignore
 │
 ├── .agents/                   # AI Agent Configuration & Skills
+│   ├── scripts/               # Shared scripts (check_health.py, rerank.py, parse_document.py)
 │   └── skills/                # Standalone skills (kb-compile, kb-health, kb-index, kb-report, kb-ask)
 │
 └── docs/                      # Standard documentation scaffold

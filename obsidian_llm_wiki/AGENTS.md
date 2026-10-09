@@ -31,7 +31,7 @@ rtk git status
 rtk git diff
 rtk ls wiki/concepts/
 rtk grep -rn "pattern" wiki/
-rtk python3 .agents/skills/kb-health/scripts/check_health.py
+rtk python3 .agents/scripts/check_health.py
 ```
 
 #### Meta Commands

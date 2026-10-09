@@ -166,7 +166,7 @@ Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinki
 
 ## Phần 5: Tùy chỉnh skill (số hop, ngưỡng, giới hạn)
 
-Skill chỉ là file Markdown (`.claude/skills/<tên>/SKILL.md`, bản sao ở `.agents/skills/`), nên bạn có thể **nhờ LLM sửa trực tiếp** để đổi hành vi, không cần code.
+Skill chỉ là file Markdown (`.claude/skills/<tên>/SKILL.md`, bản sao ở `.agents/skills/`), còn script dùng chung nằm ở `.claude/scripts/` và `.agents/scripts/`, nên bạn có thể **nhờ LLM sửa trực tiếp** để đổi hành vi, không cần code.
 
 **Số hop** là số lần "nhảy" qua `[[wikilink]]` từ note tìm thấy đầu tiên khi tra cứu. Mặc định theo loại câu hỏi:
 
@@ -187,11 +187,12 @@ Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/
 
 | Cấu hình | Mặc định | Nằm ở đâu |
 |---|---|---|
-| Số note đọc đầy đủ tối đa (`/kb-ask`) | ~6 note | `kb-ask/SKILL.md` |
-| Số note đọc đầy đủ tối đa (`/kb-report`) | ~12 note | `kb-report/SKILL.md` |
+| Số note đọc đầy đủ tối đa (`/kb-ask`) | 6 note (1 hop), 12 note (2 hops) | `kb-ask/SKILL.md` |
+| Số note đọc đầy đủ tối đa (`/kb-report`) | 6 / 12 / 18 note (1 / 2 / 3 hops) | `kb-report/SKILL.md` |
+| Rerank 2 tầng: trọng số điểm (title 3, tags 2, tên file 2, heading 1) và ngưỡng shortlist (2 × hạn mức) | Tầng 1 là script, tầng 2 là LLM đọc lướt heading | `.claude/scripts/rerank.py` và `.agents/scripts/rerank.py` (một bản dùng chung cho `kb-ask` và `kb-report`), `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
 | Có/không cho tìm web, và hỏi trước khi tìm | Chỉ khi wiki thiếu, luôn hỏi trước | `kb-ask/SKILL.md`, `kb-report/SKILL.md`, `CLAUDE.md`/`AGENTS.md` (mục Web Search Policy) |
-| Ngưỡng note "cũ" (stale) | > 90 ngày | `kb-health/SKILL.md` **và** `kb-health/scripts/check_health.py` |
-| Ngưỡng tách note quá dài | > 300 dòng | `kb-compile/SKILL.md`, `kb-health/SKILL.md`, `kb-health/scripts/check_health.py`, `SCHEMA.md`, `CLAUDE.md`/`AGENTS.md` |
+| Ngưỡng note "cũ" (stale) | > 90 ngày | `kb-health/SKILL.md` **và** `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py` |
+| Ngưỡng tách note quá dài | > 300 dòng | `kb-compile/SKILL.md`, `kb-health/SKILL.md`, `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py`, `SCHEMA.md`, `CLAUDE.md`/`AGENTS.md` |
 | Điều kiện tạo note mới | Khái niệm xuất hiện trong ≥ 2 nguồn | `kb-compile/SKILL.md`, `SCHEMA.md` |
 | Số link ra tối thiểu mỗi note | 2 | `SCHEMA.md`, `CLAUDE.md` |
 | Xoay vòng `log.md` | Khi quá 500 mục | `kb-health/SKILL.md`, `SCHEMA.md` |

@@ -17,9 +17,9 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
 1. **Layer 1 — Script Scan (deterministic)**:
    - Run the bundled standalone health check script via terminal:
      ```bash
-     python3 <path-to-this-skill>/scripts/check_health.py docs
+     python3 .agents/scripts/check_health.py docs
      ```
-     *(Replace `<path-to-this-skill>` with this skill's own directory, e.g. `.agents/skills/kb-health`, and add `--json` for machine-readable output).*
+     *(Add `--json` for machine-readable output).*
    - **Evaluate Output**:
      - Check reported broken `[[...]]` links.
      - Review "links resolving only to `docs/raw/`": a `[[link]]` whose only match is a raw source usually means the same-named wiki note was deleted or renamed (a raw/ copy would otherwise mask it). Intentional links to raw specs are fine.

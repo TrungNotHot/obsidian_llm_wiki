@@ -51,10 +51,7 @@ if [ ! -d "$TARGET_DIR/docs/.obsidian" ] && [ -d "$SCRIPT_DIR/docs/.obsidian" ];
 fi
 
 # 3. Ensure scripts are executable
-for f in "$TARGET_DIR"/.agents/skills/kb-health/scripts/check_health.py \
-         "$TARGET_DIR"/.claude/skills/kb-health/scripts/check_health.py \
-         "$TARGET_DIR"/.agents/skills/kb-compile/scripts/parse_document.py \
-         "$TARGET_DIR"/.claude/skills/kb-compile/scripts/parse_document.py; do
+for f in "$TARGET_DIR"/.agents/scripts/*.py "$TARGET_DIR"/.claude/scripts/*.py; do
     [ -f "$f" ] && chmod +x "$f"
 done
 
