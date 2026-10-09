@@ -16,9 +16,6 @@
   - `docs/index.md`: Master content catalog, navigation map, and technical glossary.
   - `docs/log.md`: Append-only chronological operations log.
   - `docs/wiki/TODO.md`: Integrity backlog for broken links, missing metadata, and content drift.
-- **Tooling & MCP**:
-  - Obsidian MCP (`mcp_obsidian`): Local REST API integration on port 27124 via `.agents/mcp_config.json` (or `.mcp.json`). Direct file system operations are also supported for markdown editing.
-  - Python Scripts: Health checks via `.agents/skills/kb-health/scripts/check_health.py docs`.
 
 ---
 
@@ -36,11 +33,7 @@
 ### 2. Sensitive File Access Rules
 
 #### Constraints
-- Respect sensitive configuration and credential boundaries:
-  - `.env*`
-  - `**/mcp_config.json` (contains `OBSIDIAN_API_KEY`)
-  - `docs/.obsidian/plugins/*/data.json` (contains plugin tokens, API keys)
-  - `docs/.obsidian/plugins/remotely-save/*` (contains cloud sync credentials)
+- Sensitive configuration and credential paths (secrets, API keys, tokens) are listed in `.agentignore`. Read `.agentignore` to know which paths are off-limits and respect them.
 - Before reading, inspecting, parsing, or accessing any file or directory containing secrets, ask the user for explicit permission.
 - Do not inspect, print, parse, or output secret credentials in context or responses.
 

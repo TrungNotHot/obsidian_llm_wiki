@@ -59,11 +59,7 @@ RTK filters and compresses command output before it reaches the LLM context, cut
 ### 3. Sensitive File Access Rules
 
 #### Constraints
-- Respect sensitive configuration and credential boundaries:
-  - `.env*`
-  - `**/mcp_config.json` (contains `OBSIDIAN_API_KEY`)
-  - `.obsidian/plugins/*/data.json` (contains plugin tokens, API keys)
-  - `.obsidian/plugins/remotely-save/*` (contains cloud sync credentials)
+- Sensitive configuration and credential paths (secrets, API keys, tokens) are listed in `.agentignore`. Read `.agentignore` to know which paths are off-limits and respect them.
 - Before reading, inspecting, parsing, or accessing any file or directory containing secrets, ask the user for explicit permission.
 - Do not inspect, print, parse, or output secret credentials in context or responses.
 
@@ -107,7 +103,9 @@ Every agent action that reads, writes, or restructures vault content must strict
    - Extracting and collecting universal concepts/entities from project repositories into `raw/articles/` $\rightarrow$ `/kb-colluni`.
    - Rebuilding master catalog `index.md`, concept maps, and glossary $\rightarrow$ `/kb-index`.
    - Auditing broken links, orphan notes, and metadata gaps $\rightarrow$ `/kb-health`.
-   - Deep multi-source investigations and architectural syntheses $\rightarrow$ `/kb-report` ("Never Answer in Chat, Always Answer in Files").
+   - Quick lookups answered in chat (read-only, no files written) $\rightarrow$ `/kb-ask`.
+   - Deep multi-source investigations and architectural syntheses $\rightarrow$ `/kb-report` ("Never Answer in Chat, Always Answer in Files" — applies to deep analysis; quick lookups via `/kb-ask` may answer in chat).
+   - **Web Search Policy**: `/kb-ask` and `/kb-report` may search the web only when the wiki lacks the answer, and MUST ask/notify the user before searching; web-sourced content is labeled unverified.
 
 2. **Baseline Guardrail (`karpathy-guidelines`)**:
    - *Active on every turn*: Think before editing, make surgical changes (do not touch unrelated notes or reformat arbitrary files), and verify integrity (`check_health.py`, link validity) before declaring completion (`verification-before-completion`).
