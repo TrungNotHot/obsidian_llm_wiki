@@ -10,7 +10,7 @@ Fast lookup: answers a question in chat from the wiki. Does NOT write files, `do
 ## Workflow
 1. **Locate seeds**: read `docs/index.md` (catalog, glossary) and the folder `README.md` catalogs (`docs/wiki/concepts/`, `docs/wiki/entities/`, `docs/wiki/easy_read/`). Grep `docs/wiki/` for keywords/synonyms, matching `title:` and `tags:` in frontmatter (tags from `docs/SCHEMA.md` taxonomy). Read the best 1-3 notes.
 2. **Follow the links (graph traversal)**: notes are cross-referenced, so use the embedded references instead of keyword search alone:
-   - *Outbound*: read `[[wikilinks]]` inside seed notes and open the relevant ones (max 2 hops, stop when the answer is covered).
+   - *Outbound*: read `[[wikilinks]]` inside seed notes and open the relevant ones. Pick the depth by question type: **1 hop** for a fact lookup, **2 hops** for relationships or summaries (stop as soon as the answer is covered). Multi-hop reasoning questions (chains across 3+ notes) are better served by `/kb-report`.
    - *Backlinks*: Grep `\[\[<note-name>` across `docs/wiki/` to find notes that cite the seed.
    - *Frontmatter links*: check `contradictions:` (read the conflicting note too) and `sources:` (open the `docs/raw/` file only if wiki detail is insufficient).
    - *Budget*: read at most ~6 notes in full. Read independent notes in parallel. No dependency on Obsidian being open.
