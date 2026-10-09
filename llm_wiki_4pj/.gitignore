@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Local credentials and Obsidian plugin state
+.env*
+docs/.obsidian/plugins/*/data.json
+docs/.obsidian/plugins/remotely-save/
+
 # Virtual environments
 .venv/
 venv/

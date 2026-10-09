@@ -32,7 +32,9 @@ cp -rn "$SCRIPT_DIR/.agents/"* "$TARGET_DIR/.agents/"
 echo "📦 Copying .claude (Claude Code skills)..."
 mkdir -p "$TARGET_DIR/.claude"
 cp -rn "$SCRIPT_DIR/.claude/"* "$TARGET_DIR/.claude/"
-[ -e "$TARGET_DIR/.mcp.json" ] || cp "$SCRIPT_DIR/.mcp.json" "$TARGET_DIR/.mcp.json"
+if [ -f "$SCRIPT_DIR/.mcp.json" ] && [ ! -e "$TARGET_DIR/.mcp.json" ]; then
+    cp "$SCRIPT_DIR/.mcp.json" "$TARGET_DIR/.mcp.json"
+fi
 [ -f "$SCRIPT_DIR/.agents/.agentignore" ] && [ ! -f "$TARGET_DIR/.agents/.agentignore" ] && cp "$SCRIPT_DIR/.agents/.agentignore" "$TARGET_DIR/.agents/"
 
 # 1c. Copy AGENTS.md workspace guidelines if not present

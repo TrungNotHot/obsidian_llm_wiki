@@ -1,19 +1,19 @@
 # Obsidian LLM Wiki
 
-Repo chung cho hai bộ wiki, giữ nguyên cấu trúc thư mục và cách sử dụng riêng:
+One repository containing two separate wiki projects, each with its own structure and workflow:
 
 ```text
 .
-├── obsidian_llm_wiki/   # Vault kiến thức tổng quát
-├── llm_wiki_4pj/        # Bộ scaffold wiki cho dự án
-└── TUTORIAL.md          # Hướng dẫn sử dụng
+├── obsidian_llm_wiki/   # General knowledge vault
+├── llm_wiki_4pj/        # Wiki scaffold for software projects
+└── TUTORIAL.md          # Setup and usage guide
 ```
 
-- [Vault kiến thức tổng quát](obsidian_llm_wiki/README.md): mở `obsidian_llm_wiki/` bằng Obsidian.
-- [Wiki cho dự án](llm_wiki_4pj/README.md): dùng `llm_wiki_4pj/setup.sh` để tạo scaffold; mở `llm_wiki_4pj/docs/` bằng Obsidian.
-- [Hướng dẫn](TUTORIAL.md).
+- [General knowledge vault](obsidian_llm_wiki/README.md): open `obsidian_llm_wiki/` in Obsidian.
+- [Project wiki scaffold](llm_wiki_4pj/README.md): use `llm_wiki_4pj/setup.sh` to scaffold a project; open `llm_wiki_4pj/docs/` in Obsidian to explore the template.
+- [Setup and usage guide](TUTORIAL.md).
 
-Remote chung: `https://github.com/TrungNotHot/obsidian_llm_wiki`.
-Hai thư mục là thư mục thường trong cùng repo, không phải submodule.
-Các quy tắc `.gitignore` riêng vẫn áp dụng trong từng thư mục.
-File chứa thông tin xác thực là local-only; cấu hình MCP cần thiết lập riêng sau khi clone.
+Shared remote: `https://github.com/TrungNotHot/obsidian_llm_wiki`.
+Both projects are regular directories in the same repository, not submodules.
+The only `.git` directory is at the repository root. Each project has its own `.gitignore`; there is no root `.gitignore`.
+Files matching `.env*` stay local. MCP configuration files are versioned and reference environment variables.

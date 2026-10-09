@@ -46,4 +46,4 @@ reports/*
 index.md
 log.md
 wiki/TODO.md
-.env
+.env*
