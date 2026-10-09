@@ -1,5 +1,7 @@
-# Sensitive paths: agents must NOT read, inspect, or print these.
 .env*
 **/mcp_config.json
-.obsidian/plugins/*/data.json
-.obsidian/plugins/remotely-save/*
+**/.mcp.json
+**/.obsidian/plugins/*/data.json
+**/.obsidian/plugins/remotely-save/**
+/.repo-merge-git/
+/.git/

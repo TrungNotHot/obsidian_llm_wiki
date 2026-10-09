@@ -1,49 +1,13 @@
-# ============ Obsidian local state (never push) ============
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/cache/
-.obsidian/hotkeys.json
+# Local agent state and migration metadata
+/.agents/
+/.codex/
+/.aws/
+/.repo-merge-git/
+/activate-repo-merge.sh
 
-# ============ Obsidian plugins runtime / secrets / build artifacts ============
-# data.json chứa API key, certs, private keys, cloud tokens -> never push
-.obsidian/plugins/*/data.json
-# main.js là build output rất nặng (vài MB) -> không push, user tự cài plugin từ community
-.obsidian/plugins/*/main.js
-# remotely-save chứa cloud credentials (S3/Drive/Dropbox) -> ignore toàn bộ
-.obsidian/plugins/remotely-save/
-
-# ============ Vault data (chỉ push design: README, TODO, SCHEMA, index, .gitkeep) ============
-# raw sources
-raw/articles/*
-!raw/articles/.gitkeep
-raw/binary/*
-!raw/binary/.gitkeep
-raw/assets/*
-!raw/assets/.gitkeep
-
-# wiki living notes
-wiki/concepts/*
-!wiki/concepts/README.md
-!wiki/concepts/.gitkeep
-wiki/entities/*
-!wiki/entities/README.md
-!wiki/entities/.gitkeep
-wiki/easy_read/*
-!wiki/easy_read/README.md
-!wiki/easy_read/.gitkeep
-wiki/_archive/**/*
-!wiki/_archive/**/
-!wiki/_archive/README.md
-!wiki/_archive/.gitkeep
-
-# reports
-reports/*
-!reports/README.md
-!reports/.gitkeep
-
-# ============ Local-only (never push) ============
-.obsidian/graph.json
-index.md
-log.md
-wiki/TODO.md
-.env
+# Credentials and plugin runtime state, in either project
+.env*
+**/mcp_config.json
+.mcp.json
+**/.obsidian/plugins/*/data.json
+**/.obsidian/plugins/remotely-save/

@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# OS and Editor temporary files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Obsidian local cache & workspace state (preserve config jsons)
+docs/.obsidian/workspace.json
+docs/.obsidian/workspace-mobile.json
+
+# Binary documents (preserve .gitkeep)
+docs/raw/binary/*
+!docs/raw/binary/.gitkeep
+
+# Superpowers specs & plans (preserve structure & .gitkeep)
+docs/raw/superpowers/**/*
+!docs/raw/superpowers/**/
+!docs/raw/superpowers/**/.gitkeep
+!docs/raw/superpowers/**/README.md
+
