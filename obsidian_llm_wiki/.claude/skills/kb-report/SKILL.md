@@ -19,32 +19,18 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
    - Scan the last 20 lines of `log.md` to see recent queries or investigations.
 
 2. **Step 1 — Search & Read Context**:
-   - Find seed notes: analyze the question yourself, identify the concepts it involves (including implied, broader or related ones), and pick the best-covering entries from `index.md` and the folder `README.md` catalogs (`wiki/concepts/`, `wiki/entities/`, `wiki/easy_read/`) by judgement. Use grep on `title:`/`tags:` only to confirm or fill gaps, not as the primary selector. **If the wiki has about 100+ notes, or the catalogs have no matching entry, keyword grep across all of `wiki/` and `reports/` is mandatory** (the index alone may miss relevant content).
+   - Find seed notes: analyze the question yourself, identify the concepts it involves (including implied, broader or related ones), and pick the best-covering entries from `index.md` and the folder `README.md` catalogs (`wiki/concepts/`, `wiki/entities/`, `wiki/easy_read/`) by judgement. Use grep on `title:`/`tags:` only to confirm or fill gaps, not as the primary selector. Before concluding the wiki lacks something, or when the catalog entries are too coarse to judge, run one keyword grep (with synonyms) across `wiki/` and `reports/` as a safety net.
    - **Traverse embedded references** (outline first, then full reads):
      - **Depth by question type**: **1 hop** for a fact lookup, **2 hops** for relationships or summaries, **3 hops** for multi-hop reasoning.
-     - **Level 1 (outline)**: run `python3 .claude/scripts/outline.py . --seeds <seed-notes> --hops <1|2|3>`. It lists every note reachable by links and backlinks within the hop limit (including prior reports in `reports/`) with its title, tags, confidence and ALL headings (no scoring), nearest hop first. Read the outlines and **rerank them yourself** by relevance to the question. The output is capped (20 / 40 / 60 notes for 1 / 2 / 3 hops). If it says the list was truncated, do NOT raise `--limit`; rerun with a narrower scope, adjusting in this order: **1) `--seeds`** (drop weakly related seeds, add missing good ones), **2) `--hops`** (only as far as the question type allows). If the script fails, fall back to grep + your own judgement.
-     - **Level 2 (full read)**: read in full at most **6 notes for 1 hop, 12 for 2 hops, 18 for 3 hops** (the seed notes already read in Step 1 are not counted), the most relevant first; if `candidates` is within the budget, skip the ranking and read them all. Also read the `contradictions:` partners of the notes you read, and open `sources:` files in `raw/` when primary-source detail is needed.
+     - **Level 1 (outline)**: run `python3 .claude/scripts/outline.py . --seeds <seed-notes> --hops <1|2|3>` (`<seed-notes>` = note file names without `.md`, **comma-separated, no spaces**, e.g. `--seeds note-a,note-b`). It lists every note reachable by links and backlinks within the hop limit (including prior reports in `reports/`) with its title, tags, confidence and ALL headings (no scoring), nearest hop first. Read the outlines and **rerank them yourself** by relevance to the question. The output is capped (default 20 / 40 / 60 notes for 1 / 2 / 3 hops). If it says the list was truncated, rerun adjusting in this order: **1) `--seeds`** (drop weakly related seeds), **2) `--hops`** (only as far as the question type allows), **3) `--limit N`** (hard cap 100) when every seed is needed; outline entries are cheap, the read budget below is what controls cost. If the script fails, fall back to grep + your own judgement.
+     - **Level 2 (full read)**: read in full at most **hops × min(5 + seeds, 12)** notes, where `seeds` = number of notes passed to `--seeds` (e.g. 6 / 12 / 18 with one seed, up to 12 / 24 / 36 with 7+ seeds; the seed notes already read in Step 1 are not counted), the most relevant first; if `candidates` is within the budget, skip the ranking and read them all. Also read the `contradictions:` partners of the notes you read, and open `sources:` files in `raw/` when primary-source detail is needed.
      - If coverage is still thin, start a new traversal from a newly found seed instead of going deeper. Keep a list of visited notes to cite in the report.
    - Cross-check with source code in primary codebase directories (e.g. `src/`, `app/`, `lib/`) when code-level verification is needed.
    - **Web search (when wiki lacks enough info)**: ASK the user for permission first, stating what is missing. Never search silently. If approved, cite every web-sourced claim with its URL in the report and label it as unverified (not yet in `raw/`); set `confidence: medium` or lower.
 
 3. **Step 2 — Synthesize & Author Report**:
    - Create a new report file: `reports/YYYY-MM-DD-<topic_slug>.md`.
-   - Use standard frontmatter conforming to `SCHEMA.md`:
-     ```yaml
-     ---
-     title: "Report Title"
-     created: YYYY-MM-DD
-     type: report
-     tags:
-       - report
-       - <domain-tag>
-     confidence: high | medium | low   # not high unless backed by 2+ sources
-     contested: false
-     contradictions: []
-     status: published
-     ---
-     ```
+   - Frontmatter follows the **Frontmatter Schema in `SCHEMA.md`** (single source of truth: fill every required field it lists, do not rely on a copy here). Report-specific: `type: report`, `tags` include `report` plus a domain tag from the taxonomy, `sources:` lists the wiki/raw notes the report relied on, `confidence` is not `high` unless backed by 2+ sources.
    - Structure the report:
      - **Executive Summary**: 2-3 sentence high-level takeaway.
      - **Detailed Technical Analysis**: Technical breakdown, interfaces, data models, or logic flow.

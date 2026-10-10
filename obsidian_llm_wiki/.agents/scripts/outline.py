@@ -77,6 +77,9 @@ def reach(notes, seeds, hops):
     return dist
 
 
+MAX_LIMIT = 100  # hard cap for --limit
+
+
 def default_limit(hops):
     return {1: 20, 2: 40}.get(hops, 60)  # 20 / 40 / 60 for 1 / 2 / 3+ hops
 
@@ -91,7 +94,7 @@ def render(notes, dist, limit, max_heads):
                 back[t].add(k)
     deg = {k: len((notes[k]["links"] | back[k]) & dist.keys()) for k in dist}
     order = sorted(dist, key=lambda k: (dist[k], -deg[k], k))
-    note = f" (showing first {limit}, nearest hop then most connected; narrow --seeds first, then --hops)" if len(order) > limit else ""
+    note = f" (showing first {limit}, nearest hop then most connected; narrow --seeds first; if every seed is needed, rerun with a larger --limit, max {MAX_LIMIT})" if len(order) > limit else ""
     out = [f"candidates: {len(order)}{note}"]
     for k in order[:limit]:
         n = notes[k]
@@ -133,7 +136,7 @@ def selftest():
         assert [default_limit(h) for h in (1, 2, 3, 4)] == [20, 40, 60, 60]
         big = {f"n{i}": {"links": set(), "title": "t", "tags": [], "conf": "", "heads": [], "path": f"wiki/n{i}.md"} for i in range(10)}
         first = render(big, {k: 0 for k in big}, 4, 25).splitlines()[0]
-        assert "narrow --seeds first, then --hops" in first and "--limit" not in first, first  # truncated: narrow, never raise the limit
+        assert "narrow --seeds first" in first and "larger --limit" in first, first  # truncated: hint to narrow or raise
         assert "narrow" not in render(big, {k: 0 for k in big}, 10, 25).splitlines()[0]  # not truncated: no hint
         # truncation keeps the best connected note of a hop, not the alphabetically first
         (v / "wiki/b0.md").write_text("# B0\nlinks [[a]]\n")
@@ -149,7 +152,7 @@ def main():
     ap.add_argument("vault", nargs="?", default=".")
     ap.add_argument("--seeds", default="", help="comma-separated note names (no extension)")
     ap.add_argument("--hops", type=int, default=2)
-    ap.add_argument("--limit", type=int, default=None, help="max notes printed (default 20/40/60 for 1/2/3 hops)")
+    ap.add_argument("--limit", type=int, default=None, help="max notes printed (default 20/40/60 for 1/2/3 hops, hard cap 100)")
     ap.add_argument("--max-headings", type=int, default=25, help="max headings printed per note")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
@@ -166,7 +169,7 @@ def main():
     if missing:
         print(f"warning: seed(s) not found (use the file name without .md): {', '.join(missing)}", file=sys.stderr)
     dist = reach(notes, seeds, a.hops)
-    print(render(notes, dist, a.limit or default_limit(a.hops), a.max_headings))
+    print(render(notes, dist, min(a.limit or default_limit(a.hops), MAX_LIMIT), a.max_headings))
 
 
 if __name__ == "__main__":

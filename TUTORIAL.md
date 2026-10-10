@@ -195,10 +195,10 @@ Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/
 
 | Cấu hình | Mặc định | Nằm ở đâu |
 |---|---|---|
-| Số note đọc đầy đủ tối đa (`/kb-ask`), không tính các seed đã đọc ở bước 1 | 6 note (1 hop), 12 note (2 hops) | `kb-ask/SKILL.md` |
-| Số note đọc đầy đủ tối đa (`/kb-report`), không tính các seed đã đọc ở bước 1 | 6 / 12 / 18 note (1 / 2 / 3 hops) | `kb-report/SKILL.md` |
-| Số ứng viên outline in ra tối đa (`--limit`) | Mặc định theo hop: 20 / 40 / 60 cho 1 / 2 / 3 hop | hàm `default_limit()` trong `.claude/scripts/outline.py` và `.agents/scripts/outline.py`, `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
-| Khi nào bắt buộc grep toàn bộ `wiki/` và `reports/` để chọn seed (vì `index.md` có thể sót) | Wiki từ khoảng 100 note, hoặc catalog không có mục khớp | `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
+| Số note đọc đầy đủ tối đa (`/kb-ask`), không tính các seed đã đọc ở bước 1 | `số hop × min(5 + số seed, 12)`: 6 / 12 note với 1 seed, tối đa 12 / 24 với từ 7 seed | `kb-ask/SKILL.md` |
+| Số note đọc đầy đủ tối đa (`/kb-report`), không tính các seed đã đọc ở bước 1 | `số hop × min(5 + số seed, 12)`: 6 / 12 / 18 note với 1 seed, tối đa 12 / 24 / 36 với từ 7 seed | `kb-report/SKILL.md` |
+| Số ứng viên outline in ra tối đa (`--limit`) | Mặc định theo hop: 20 / 40 / 60 cho 1 / 2 / 3 hop; khi bị cắt và mọi seed đều cần thì AI nâng `--limit` (tối đa 100, hằng `MAX_LIMIT`) | hàm `default_limit()` và hằng `MAX_LIMIT` trong `.claude/scripts/outline.py` và `.agents/scripts/outline.py`, `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
+| Khi nào grep (kèm từ đồng nghĩa) toàn bộ `wiki/` và `reports/` làm lưới an toàn khi chọn seed | Trước khi kết luận wiki thiếu, hoặc khi mô tả trong catalog quá thô để đánh giá | `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
 | Có/không cho tìm web, và hỏi trước khi tìm | Chỉ khi wiki thiếu, luôn hỏi trước | `kb-ask/SKILL.md`, `kb-report/SKILL.md`, `CLAUDE.md`/`AGENTS.md` (mục Web Search Policy) |
 | Ngưỡng note "cũ" (stale): "Outdated vs cited source" (trang cũ hơn nguồn nó trích dẫn > 90 ngày) và "Aging candidates" (> 90 ngày kể từ lần cập nhật, chỉ coi là cũ nếu có nguồn mới hơn cùng chủ đề) | > 90 ngày | `kb-health/SKILL.md` **và** `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py` |
 | Ngưỡng tách note quá dài | > 300 dòng | `kb-compile/SKILL.md`, `kb-health/SKILL.md`, `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py`, `SCHEMA.md`, `CLAUDE.md`/`AGENTS.md` |
