@@ -202,7 +202,7 @@ Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/
 | Có/không cho tìm web, và hỏi trước khi tìm | Chỉ khi wiki thiếu, luôn hỏi trước | `kb-ask/SKILL.md`, `kb-report/SKILL.md`, `CLAUDE.md`/`AGENTS.md` (mục Web Search Policy) |
 | Ngưỡng note "cũ" (stale): "Outdated vs cited source" (trang cũ hơn nguồn nó trích dẫn > 90 ngày) và "Aging candidates" (> 90 ngày kể từ lần cập nhật, chỉ coi là cũ nếu có nguồn mới hơn cùng chủ đề) | > 90 ngày | `kb-health/SKILL.md` **và** `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py` |
 | Ngưỡng tách note quá dài | > 300 dòng | `kb-compile/SKILL.md`, `kb-health/SKILL.md`, `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py`, `SCHEMA.md`, `CLAUDE.md`/`AGENTS.md` |
-| Quy tắc `confidence`: không đặt `high` nếu chưa có từ 2 nguồn | 2 nguồn | `SCHEMA.md`, `kb-compile/SKILL.md`, `kb-report/SKILL.md` (mẫu frontmatter) |
+| Quy tắc `confidence`: không đặt `high` nếu chưa có từ 2 nguồn | 2 nguồn | `SCHEMA.md`, `kb-compile/SKILL.md`, `kb-report/SKILL.md` (mẫu frontmatter), `check_health.py` (mục "confidence: high with fewer than 2 sources") |
 | Điều kiện tạo note mới | Khái niệm xuất hiện trong ≥ 2 nguồn | `kb-compile/SKILL.md`, `SCHEMA.md` |
 | Số link ra tối thiểu mỗi note | 2 | `SCHEMA.md`, `CLAUDE.md` |
 | Xoay vòng `log.md` | Khi quá 500 mục | `kb-health/SKILL.md`, `SCHEMA.md` |

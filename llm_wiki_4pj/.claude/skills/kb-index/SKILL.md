@@ -29,6 +29,11 @@ Ensures that as the wiki grows, developers and AI agents can always navigate the
    - **Glossary of Terms**: Alphabetical quick-reference table of core domain terms and acronyms.
    - **Compounding Reports**: Chronological catalog of generated reports with concise one-line summaries.
 
+3b. **Guardrail before overwriting `docs/index.md`** (it is the entry point of every other skill and is gitignored, so git cannot restore it):
+   - Compare the rebuilt catalog with the current `docs/index.md`: count entries **added**, **removed** and **changed**, and reuse existing hand-written summaries instead of rewriting them.
+   - If any entry is **removed**, or **10 or more** entries are added/changed, show the user this summary (with the removed entries) and **ask for confirmation before writing**.
+   - If only a few notes changed, edit the affected entries in place instead of regenerating the whole file.
+
 4. **Log the Operation**:
    - Append to `docs/log.md`:
      ```markdown

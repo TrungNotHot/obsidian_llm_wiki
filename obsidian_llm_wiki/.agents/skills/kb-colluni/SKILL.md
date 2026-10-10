@@ -50,8 +50,10 @@ If `index.md` is absent or does not explicitly categorize universal sections:
   (or `<src_vault>/wiki/...` without `docs/`).
 - If needed, run a bounded discovery command:
   ```bash
-  rtk find "<src_vault>" -maxdepth 5 -type d -path "*/universal"
+  find "<src_vault>" -maxdepth 5 -type d -path "*/universal"
   ```
+
+- If the source vault does not use the `universal/` and `local/` convention, pick candidates by judgement (timeless, reusable patterns and platforms) and let the user confirm them in Step 1 of the workflow.
 
 All extracted and sanitized documents are saved to:
 - `dest_vault/raw/articles/<kebab-case-slug>.md`
@@ -110,16 +112,10 @@ tags:
 When `/kb-colluni` is triggered:
 
 1. **Step 0 — Parameter Validation & User Prompt (MANDATORY)**:
-   - Check if the user specified the `src_vault` path in their request.
-   - **If `src_vault` is NOT provided**: The agent MUST immediately pause and ask the user:
-     > *"Please provide the path to the source project repository or vault (`src_vault`) to extract universal concepts and entities from."*
-     Do not proceed with discovery until the user supplies this path.
-   - **Set `dest_vault`**: Automatically default to the current active General Knowledge Vault (`obsidian_llm_wiki`). Do NOT ask the user for `dest_vault` unless they explicitly request an override.
+   - Apply Section 1: if `src_vault` was not provided, **STOP and ask the user** for it (*"Please provide the path to the source project repository or vault (`src_vault`) to extract universal concepts and entities from."*) and do not proceed with discovery until they answer. `dest_vault` defaults to the current vault; do not ask unless the user overrides it.
 
 2. **Step 1 — Discovery & Inventory (Catalog-First)**:
-   - **Inspect Master Catalog**: Read `<src_vault>/docs/index.md` (or `<src_vault>/index.md`) to extract the list of Universal Concepts and Universal Entities directly from the master index.
-   - **Cross-check Directory Catalogs**: Read `<src_vault>/docs/wiki/concepts/README.md` and `<src_vault>/docs/wiki/entities/README.md` to confirm the scope and summary of each item.
-   - **Fallback**: If `index.md` is absent, scan convention folders (`wiki/concepts/universal/`, `wiki/entities/universal/`) directly.
+   - Apply Section 2 (master catalog, directory catalogs, then the fallback if needed).
    - Present the identified universal candidate list to the user (file names, inferred topics, source locations) and **STOP until the user confirms** which items to harvest. If the confirmed set is **10 or more** files, restate the count and destination before writing.
 
 3. **Step 2 — Semantic Read & Reference Sanitization**:
@@ -135,7 +131,7 @@ When `/kb-colluni` is triggered:
    - Write the resulting markdown file to `dest_vault/raw/articles/<kebab-case-slug>.md`.
 
 5. **Step 4 — Audit & Verification**:
-   - Verify that no `[[` or `]]` exist anywhere in the written `raw/articles/*.md` files.
+   - Verify that no wikilink remains in the written `raw/articles/*.md` files. Ignore fenced and inline code (shell conditionals like `[[ -f x ]]` are not wikilinks); a wikilink is `[[Name]]` or `[[Name|Alias]]` in prose.
    - Verify valid YAML frontmatter with `sha256` and `source_vault`.
 
 6. **Step 5 — Log & Next Steps**:
