@@ -66,22 +66,21 @@ Per the constitutional Karpathy & Hermes Agent LLM Wiki design, **`raw/` is Laye
 - **Strict Invariant**: Files inside `raw/articles/` must **NEVER contain Obsidian wikilinks (`[[...]]`)**. Wikilinks exist exclusively in Layer 2 (`wiki/`).
 - If wikilinks were kept in `raw/`, they would cause **Graph Pollution** and create **ghost/unresolved backlinks** across the vault.
 
-### Semantic Link Sanitization Rules:
+### Sanitization Rules:
 1. **Universal Pattern Mentions $\rightarrow$ Plain Text / Bold Terms**:
-   - Strip the `[[...]]` brackets and convert to canonical architectural names:
-     - `[[watermark_incremental_sync|Watermark Incremental Sync]]` $\rightarrow$ **Watermark Incremental Synchronization**
-     - `[[append_on_change_xxhash64]]` $\rightarrow$ **Append-on-Change CDC (xxHash64)**
-     - `[[kimball_dimensional_modeling]]` $\rightarrow$ **Ralph Kimball Dimensional Modeling (Star Schema)**
-     - `[[apache_airflow]]` $\rightarrow$ **Apache Airflow**
-     - `[[microsoft_sql_server]]` $\rightarrow$ **Microsoft SQL Server**
+   - Strip the `[[...]]` brackets and convert to the canonical industry name:
+     - `[[some-pattern|Some Pattern]]` $\rightarrow$ **Some Pattern**
+     - `[[platform-note]]` $\rightarrow$ **Platform Name** (the well-known product name)
 2. **Project-Specific Mentions $\rightarrow$ Generic Case Studies**:
-   - Strip project wikilinks and convert to generic implementation descriptions:
-     - `[[dag_crawl_employee]]` $\rightarrow$ `Employee Ingestion Pipeline` (or inline code `` `dag_crawl_employee` ``)
-     - `[[traffic_cop_logging]]` $\rightarrow$ `centralized database execution logging`
-     - Strip internal file paths (`docs/raw/superpowers/specs/...` or `include/utils/...`) and replace with descriptive citations: *(derived from production ETL design specs)*.
+   - Strip project wikilinks and convert to a generic description of what the thing does:
+     - `[[project-specific-note]]` $\rightarrow$ `nightly ingestion pipeline` (or inline code with the bare name)
+     - Strip internal file paths (e.g. `docs/specs/...`, `src/utils/...`) and replace with descriptive citations: *(derived from the project's design specs)*.
 3. **Preserve Complete Substance**:
    - Retain 100% of mathematical equations, ASCII/Mermaid diagrams, decision tables, schema definitions, and algorithm pseudo-code.
    - The output must be an authoritative, self-contained reference article ready for knowledge compilation.
+4. **Scrub Sensitive & Identifying Data**:
+   - Replace host names, internal URLs, connection strings, credentials/tokens, IP addresses, personal names, employee identifiers and company-specific names with a generic description (e.g. `the ERP database server`, `an employee ID`). Keep the technical meaning, drop the identity.
+   - If you are unsure whether something is sensitive, stop and ask the user before writing.
 
 ---
 
@@ -122,10 +121,11 @@ When `/kb-colluni` is triggered:
    - For each file, read the full content.
    - Strip ALL `[[...]]` wikilinks, converting universal concepts to standard architectural terminology and local items to generic case studies.
    - Replace project-internal relative paths with descriptive citations.
+   - Apply the Section 3 scrub rule (sensitive and identifying data).
    - Ensure ZERO `[[wikilinks]]` remain in the article body.
 
 4. **Step 3 — Distillation & File Generation**:
-   - Compute `sha256` hash of the sanitized body.
+   - Compute the `sha256` of the sanitized body: the UTF-8 text after the frontmatter's closing `---`, with surrounding whitespace stripped (this is how `kb-health` recomputes it for drift checks).
    - **Check the destination first**: if `dest_vault/raw/articles/<kebab-case-slug>.md` already exists, compare its stored `sha256` with the new one. *Identical*: skip (already harvested). *Different*: do NOT overwrite (raw is immutable); report it as source drift and ask the user whether to save under a new dated slug.
    - Construct standard frontmatter (`source_vault`, `source_file`, `ingested`, `sha256`, `tags`).
    - Write the resulting markdown file to `dest_vault/raw/articles/<kebab-case-slug>.md`.

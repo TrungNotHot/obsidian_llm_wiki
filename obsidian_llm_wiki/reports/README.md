@@ -13,17 +13,7 @@ This directory stores permanent, high-value analytical outputs and architectural
 ## 📝 Conventions & Standards
 
 1. **File Naming**: Formatted as `YYYY-MM-DD-<topic_slug>.md` (e.g. `2026-09-25-initial-system-survey.md`).
-2. **Frontmatter Standard**:
-   ```yaml
-   ---
-   title: "Descriptive Report Title"
-   created: YYYY-MM-DD
-   type: report
-   tags: [report, <domain-tag>]
-   confidence: high | medium
-   status: published
-   ---
-   ```
+2. **Frontmatter Standard**: follow the Frontmatter Schema in [[SCHEMA]] (single source of truth).
 3. **Report Structure**:
    - **Executive Summary**: 2–3 sentence high-level finding.
    - **Detailed Technical Breakdown**: Data contracts, interfaces, lineage, or code walkthroughs.

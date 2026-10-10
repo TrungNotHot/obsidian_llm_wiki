@@ -17,7 +17,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
 1. **Step 1 — Session Orientation (CRITICAL)**:
    - Read `SCHEMA.md` to review the domain taxonomy and page thresholds.
    - Read `index.md` to check existing pages and summaries.
-   - Scan the last 20–30 lines of `log.md` to understand recent activity and prevent duplicating work.
+   - Read the last 5 entries of `log.md` to understand recent activity and prevent duplicating work.
 
 2. **Step 2 — Source Capture (Binary Document, Local File, or URL)**:
    - **If a binary document (`.pdf`, `.docx`, `.pptx`, `.xlsx`, images) is provided or added to `raw/binary/`**:
@@ -30,7 +30,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
      - The script automatically handles SHA-256 caching, prevents duplicate conversion, and outputs to `raw/articles/<slug>.md`.
      - Read the generated `raw/articles/<slug>.md` in full to proceed with distillation.
    - **If a URL is provided**: Fetch the page as clean markdown with `read_url_content`.
-     - Compute the `sha256` hash of the content body.
+     - Compute the `sha256` of the content body (UTF-8 text after the frontmatter, whitespace stripped; see `SCHEMA.md`).
      - If the file already exists in `raw/articles/`, compare the new hash with the stored `sha256`:
        - *Identical*: Skip re-compiling (source unchanged, saving tokens).
        - *Different*: Flag as **Source Drift** and proceed with compilation.
@@ -48,7 +48,12 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - Identify core concepts, entities, architectural patterns, and business rules.
    - **Page Thresholds** (per `SCHEMA.md`): Only create a dedicated page if an entity/concept appears in $\ge 2$ sources OR is central to this source. Avoid creating clutter for passing mentions.
    - For pages above the split threshold in `SCHEMA.md`, decompose into sub-topics.
-   - **Find related existing pages (before creating or editing)**: read `index.md` (if it is large, read the relevant sections or grep it) and pick the entries matching the concepts/entities in the source (including broader or related ones) by judgement; read the folder `README.md` catalogs only if the index is not enough. Before creating a new page, grep `wiki/` for its name and synonyms: a miss here silently causes duplicate pages or missed contradictions. Read the matches. For a page you will edit, you may run `python3 .agents/scripts/outline.py . --seeds <those-pages> --hops 1` (note names without `.md`, comma-separated, no spaces) to see the pages it links to and from. Update an existing page instead of creating a near-duplicate. If this finds **10 or more** affected pages, apply the Mass-Update Guardrail below.
+   - **Find related existing pages (before creating or editing)**:
+     - Read `index.md` (if it is large, read the relevant sections or grep it) and pick the entries matching the concepts/entities in the source (including broader or related ones) by judgement.
+     - Before creating a new page, grep `wiki/` for its name and synonyms: a miss here silently causes duplicate pages or missed contradictions. Read the matches.
+     - For a page you will edit, you may run `python3 .agents/scripts/outline.py . --seeds <those-pages> --hops 1` (note names without `.md`, comma-separated, no spaces) to see the pages it links to and from.
+     - Update an existing page instead of creating a near-duplicate.
+     - If this finds **10 or more** affected pages, apply the Mass-Update Guardrail below.
    - **Mass-Update Guardrail**: If the planned ingestion will touch **10 or more** existing wiki pages, summarize the affected notes and confirm the update scope with the user before applying edits.
 
 4. **Step 4 — Update or Create Pages with Contradiction Handling**:
@@ -60,22 +65,9 @@ Acts as the automated librarian and compiler for incoming information (web artic
      - Set `confidence: medium` or `low` until reconciled.
    - **Confidence**: never set `high` without support from 2+ sources.
    - **Superseded pages**: if a page is fully replaced or decommissioned, follow the Archiving Workflow in `SCHEMA.md` (move to `wiki/_archive/`, drop from `index.md`, mark inbound links `(archived)`, log it).
-   - Standard frontmatter:
-     ```yaml
-     ---
-     title: "Page Title"
-     created: YYYY-MM-DD
-     updated: YYYY-MM-DD
-     type: concept | entity | architecture
-     tags: [from SCHEMA.md taxonomy]
-     sources: [raw/...]
-     confidence: high | medium | low
-     contested: false
-     contradictions: []
-     status: published
-     ---
-     ```
+   - **Frontmatter**: follow the Frontmatter Schema in `SCHEMA.md` (single source of truth: fill every required field, and set `updated:` when you edit an existing page). Use only tags from its taxonomy; to add a new tag, update `SCHEMA.md` first, then use it.
    - Ensure minimum 2 outbound `[[wikilinks]]` per page.
+   - **Provenance**: when a page synthesizes 3 or more sources, add `^[raw/source-file.md]` markers to its key paragraphs (see `SCHEMA.md`).
 
 5. **Step 5 — Bulk Ingest (When processing multiple sources)**:
    - Read all raw sources first.
@@ -92,3 +84,4 @@ Acts as the automated librarian and compiler for incoming information (web artic
      - Contradictions flagged: None (or list conflicting notes)
      ```
    - Update `index.md` under the appropriate section, or invoke `/kb-index`.
+   - **Report to the user** a short summary: pages created, pages updated, and contradictions flagged.

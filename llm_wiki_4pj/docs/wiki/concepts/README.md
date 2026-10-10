@@ -20,18 +20,6 @@ Add your project-specific mechanisms, business transformation rules, and custom 
 
 ## 📐 Conventions & Rules (per `docs/SCHEMA.md`)
 
-1. **Atomic & Focused**: Each note covers exactly one concept, pattern, or mechanism. Keep notes concise and scannable (< 200 lines).
-2. **Standard Frontmatter**:
-   ```yaml
-   ---
-   title: "Concept Name"
-   created: YYYY-MM-DD
-   updated: YYYY-MM-DD
-   type: concept
-   tags: [concept, <domain-tag>]
-   confidence: high # high | medium | low
-   contested: false
-   status: published
-   ---
-   ```
+1. **Atomic & Focused**: Each note covers exactly one concept, pattern, or mechanism. Keep notes concise and scannable (split threshold: see [[SCHEMA]]).
+2. **Standard Frontmatter**: follow the Frontmatter Schema in [[SCHEMA]] (single source of truth).
 3. **Connectivity**: Every concept note must contain at least **2 outbound wikilinks** (`[[...]]`) connecting to related entities, architectural guides, or parent concepts.

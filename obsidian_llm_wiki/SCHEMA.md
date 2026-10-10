@@ -59,9 +59,10 @@ source_url: https://example.com/source # for web clips
 source_file: raw/binary/document.pdf # for binary conversions
 original_type: pdf | docx | pptx | xlsx # source format
 ingested: YYYY-MM-DD
-sha256: <hex-digest-of-source-file-or-content>
+sha256: <hex-digest> # text sources: hash of the note body (UTF-8 text after the frontmatter, whitespace stripped); binary conversions: hash of the original binary file
 ---
 ```
+`kb-health` re-verifies the hash of text sources only; notes with `original_type` (binary conversions) are skipped.
 
 ---
 

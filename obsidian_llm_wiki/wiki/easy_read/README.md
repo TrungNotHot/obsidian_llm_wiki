@@ -7,17 +7,5 @@ This directory contains stakeholder-accessible architecture guides, end-to-end w
 ## 📐 Conventions & Rules (per [[SCHEMA]])
 
 1. **Purpose**: Provide high-level, human-readable walkthroughs of systems, pipelines, and workflows.
-2. **Standard Frontmatter**:
-   ```yaml
-   ---
-   title: "Guide Title"
-   created: YYYY-MM-DD
-   updated: YYYY-MM-DD
-   type: guide
-   tags: [guide, easy-read, architecture]
-   confidence: high
-   contested: false
-   status: published
-   ---
-   ```
+2. **Standard Frontmatter**: follow the Frontmatter Schema in [[SCHEMA]] (single source of truth).
 3. **Connectivity**: Every guide must cross-link to relevant concepts and entities.

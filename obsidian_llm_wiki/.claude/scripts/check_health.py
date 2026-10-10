@@ -222,7 +222,7 @@ def mechanical_checks(vault_path, md_files):
             continue
         fm, body = _fm(f.read_text(encoding="utf-8", errors="ignore"))
         stored = re.search(r"^sha256:\s*([0-9a-f]{64})", fm, re.MULTILINE)
-        if stored:
+        if stored and not re.search(r"^original_type:", fm, re.MULTILINE):  # binary conversions store the hash of the original binary, not of the body
             variants = {body, body.lstrip("\n"), body.strip()}
             if stored.group(1) not in {hashlib.sha256(v.encode("utf-8")).hexdigest() for v in variants}:
                 out["source_drift"].append(rel(f))

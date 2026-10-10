@@ -14,12 +14,12 @@ Ensures that as the wiki grows, developers and AI agents can always navigate the
 
 ## Workflow Steps:
 
-1. **Scan the Entire Vault**:
-   - Traverse all subdirectories under `docs/wiki/` (e.g. system architecture, domain models, concepts, entities).
-   - Traverse `docs/reports/` and `docs/raw/`.
+1. **Detect what changed** (default, incremental):
+   - Run `python3 .agents/scripts/check_health.py docs` and read "Not in index.md" (pages missing from the index). Also note pages whose `updated:` is later than the date of the last `Index` entry in `docs/log.md`, and index entries whose note no longer exists.
+   - Do a **full rebuild** (traverse every subdirectory under `docs/wiki/`, plus `docs/reports/` and `docs/raw/`) only when the user asks for it or `docs/index.md` does not exist.
 
 2. **Extract Metadata**:
-   - Read titles, summaries, tags, and cross-references from frontmatter and headings.
+   - Read titles, summaries, tags, and cross-references from frontmatter and headings, for the changed or new notes only (every note on a full rebuild).
 
 3. **Rebuild `docs/index.md`**:
    - **System Overview & Quick Links**: Fast links to core reports, synthesis documents, and the active operations log.

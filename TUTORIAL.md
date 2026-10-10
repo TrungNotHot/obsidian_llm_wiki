@@ -203,7 +203,7 @@ Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/
 | Ngưỡng chia mục trong `index.md` | > 50 mục / mục | `SCHEMA.md` |
 | Tạo `topic-map.md` | Khi quá 200 trang | `SCHEMA.md` |
 | Xác nhận trước khi sửa hàng loạt | ≥ 10 trang | `CLAUDE.md` / `AGENTS.md` |
-| Số dòng cuối `log.md` đọc khi khởi động | 20 dòng (`kb-compile`: 20–30) | `kb-report/SKILL.md`, `kb-compile/SKILL.md` |
+| Số mục cuối `log.md` đọc khi khởi động | 5 mục gần nhất | `kb-report/SKILL.md`, `kb-compile/SKILL.md` |
 
 Ví dụ: `Sửa kb-health: đổi ngưỡng stale từ 90 ngày thành 180 ngày (cả SKILL.md và check_health.py).`
 

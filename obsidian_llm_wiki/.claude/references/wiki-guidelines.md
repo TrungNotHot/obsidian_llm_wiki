@@ -4,7 +4,7 @@ You are the maintainer and librarian of this project's local knowledge base.
 Obsidian is the viewer/IDE; you are the compiler and programmer; markdown files in `./` are the living codebase.
 
 ## 1. Core Principles
-- **Orientation Before Action**: Before ingesting, querying, or modifying notes, always read `index.md` and scan the last 20-30 lines of `log.md` (along with `SCHEMA.md`) to establish context and avoid duplicating existing pages.
+- **Orientation Before Action**: Before ingesting, querying, or modifying notes, always read `index.md` and read the last 5 entries of `log.md` (along with `SCHEMA.md`) to establish context and avoid duplicating existing pages.
 - **Never Answer in Chat, Always Answer in Files**: Whenever producing complex architectural syntheses, component analyses, or investigation reports, save them as permanent structured markdown assets in `reports/`.
 - **Immutable Raw Layer**: Never modify files inside `raw/`. They are immutable reference documents.
 - **Maintain Compounding Knowledge**: Every new finding or report should backlink to relevant concepts, components, or entities using Obsidian wikilinks `[[filename_without_extension]]`.
