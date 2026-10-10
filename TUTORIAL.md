@@ -4,6 +4,8 @@ Kho tài liệu này gồm 2 phần độc lập theo triết lý LLM Wiki của
 - **`llm_wiki_4pj`**: Mẫu wiki (Scaffold) nhúng trực tiếp vào dự án phần mềm để quản lý tài liệu kỹ thuật sát với code.
 - **`obsidian_llm_wiki`**: Kho tri thức trung tâm (Central Vault) độc lập, chứa toàn bộ kiến thức chung của bạn.
 
+Mỗi vault có hai cây công cụ cùng nội dung: `.claude/` (cho Claude Code) và `.agents/` (cho Gemini/Antigravity), gồm `skills/`, `scripts/` và `references/`. `.claude/` là bản gốc, `.agents/` được sinh bằng `sync_agents.py` (xem Phần 6).
+
 > **Nguyên tắc cốt lõi**: Bạn mở **Obsidian** để xem liên kết và đọc ghi chú. **AI Agent** (trong terminal) làm nhiệm vụ biên soạn, liên kết và dọn dẹp các tệp Markdown.
 
 ---
@@ -33,17 +35,25 @@ cp -n CLAUDE.md /duong-dan/toi/du-an-cua-ban/   # Nếu dùng Claude Code
 
 Mở `<du-an>/docs/SCHEMA.md`, tìm **Part 2: Project Domain Configuration** để điền mô tả ngắn và một vài tag nghiệp vụ của dự án (ví dụ: `billing`, `api`, `auth`).
 
+### Cập nhật skill cho dự án đã cài
+`setup.sh` dùng `cp -rn` (không ghi đè), nên chạy lại sẽ không cập nhật skill đã có. Để lấy phiên bản skill mới nhất từ `llm_wiki_4pj`, chép đè các thư mục công cụ (không chép `docs/`, vì `docs/SCHEMA.md` chứa cấu hình riêng của dự án):
+```bash
+cp -r llm_wiki_4pj/.claude/{skills,scripts,references} /duong-dan/toi/du-an-cua-ban/.claude/
+cp -r llm_wiki_4pj/.agents/{skills,scripts,references} /duong-dan/toi/du-an-cua-ban/.agents/
+```
+Sau đó so `docs/SCHEMA.md` của dự án với bản mẫu để áp dụng các quy tắc mới (ví dụ định nghĩa `sha256`), vì skill trỏ về `SCHEMA.md` cho các quy tắc đó.
+
 ### 2. Bảng 5 Skill dùng trong dự án
 
 Mở terminal tại thư mục gốc của dự án code và gọi các lệnh sau:
 
 | Skill | Cú pháp | Khi nào dùng & Chức năng | Mức suy luận (Effort) | Đầu ra chính |
 |---|---|---|---|---|
-| **Biên dịch tài liệu** | `/kb-compile` | Khi vừa ném tài liệu/spec vào `docs/raw/` (hoặc đưa link URL). AI tự đọc, chia thành các note nhỏ có liên kết `[[...]]`. AI tự tìm note liên quan có sẵn để cập nhật, tránh tạo trùng.<br>• Riêng dự án: Lưu vào `local/` (nếu chỉ dùng cho dự án này).<br>• Dùng chung: Lưu vào `universal/` (nếu là pattern có thể tái sử dụng). | 🧠 **High** | `docs/wiki/`, `docs/index.md`, `docs/log.md` |
-| **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). Nếu wiki thiếu dữ liệu, AI hỏi bạn trước khi tìm web (nguồn web ghi rõ URL, gắn nhãn chưa kiểm chứng). | 🧠 **High** | `docs/reports/<slug>.md` |
-| **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. AI tìm `[[link hỏng]]`, note mồ côi (không có ai trỏ đến), và tài liệu bị lệch (drift) so với code thực tế, đồng thời rà mâu thuẫn giữa các note (cần đọc hiểu nội dung). | 🧠 **High** | `docs/wiki/TODO.md` |
+| **Biên dịch tài liệu** | `/kb-compile` | Khi vừa ném tài liệu/spec vào `docs/raw/` (hoặc đưa link URL). AI tự đọc, chia thành các note nhỏ có liên kết `[[...]]`. AI chọn note liên quan từ `docs/index.md` và grep tên khái niệm trước khi tạo trang mới, để cập nhật thay vì tạo trùng; khi chạy tương tác, nó nêu 3-5 điểm chính và danh sách trang sẽ tạo/cập nhật trước khi ghi.<br>• Riêng dự án: Lưu vào `local/` (nếu chỉ dùng cho dự án này).<br>• Dùng chung: Lưu vào `universal/` (nếu là pattern có thể tái sử dụng). | 🧠 **High** | `docs/wiki/`, `docs/index.md`, `docs/log.md` |
+| **Báo cáo chuyên sâu** | `/kb-report <câu hỏi>` | Khi gặp bài toán phức tạp cần điều tra (ví dụ: lỗi luồng dữ liệu, phân tích phương án kiến trúc). AI tự phân tích trong repo và lưu báo cáo vĩnh viễn (không trả lời trôi trong chat). Khi wiki mô tả hành vi đã cài đặt trong code, AI đối chiếu với code thật và ghi các chỗ tài liệu lệch code vào một mục riêng; nếu đã có báo cáo cùng câu hỏi thì cập nhật báo cáo cũ. Nếu wiki thiếu dữ liệu, AI hỏi bạn trước khi tìm web (nguồn web ghi rõ URL, gắn nhãn chưa kiểm chứng). | 🧠 **High** | `docs/reports/<slug>.md` |
+| **Kiểm tra sức khỏe** | `/kb-health` | Chạy định kỳ để rà soát chất lượng wiki. Script tìm `[[link hỏng]]`, note mồ côi, note thiếu trong index, sai frontmatter/tag và nguồn `raw/` bị sửa (source drift). Sau đó AI rà mâu thuẫn giữa các note (mặc định chỉ xét note mới đổi từ lần health trước), đối chiếu tài liệu với code, và gợi ý khái niệm chưa có trang. | 🧠 **High** | `docs/wiki/TODO.md` |
 | **Hỏi đáp nhanh** | `/kb-ask <câu hỏi>` | Tra cứu nhanh kiến thức trong `docs/wiki/`, trả lời ngay trong chat (có trích dẫn `[[note]]`), không ghi file. Nếu wiki thiếu, AI **hỏi bạn trước** khi tìm web và gắn nhãn nguồn web là chưa kiểm chứng. | ⚖️ **Medium** | Trả lời trong chat |
-| **Cập nhật mục lục** | `/kb-index` | Sau khi tạo nhiều note mới hoặc sửa đổi cấu trúc wiki. AI quét lại toàn bộ note và xây lại mục lục, bảng thuật ngữ. | ⚡ **Low** | `docs/index.md` |
+| **Cập nhật mục lục** | `/kb-index` | Sau khi tạo nhiều note mới hoặc sửa đổi cấu trúc wiki. AI chỉ cập nhật mục lục cho note mới hoặc thay đổi (rebuild toàn bộ khi bạn yêu cầu), và hỏi bạn trước nếu có mục bị xóa hoặc từ 10 mục thay đổi. | ⚡ **Low** | `docs/index.md` |
 
 
 ### 3. Khi code thay đổi nhưng không có tài liệu trong `docs/raw/`
@@ -86,12 +96,12 @@ Mở terminal tại thư mục `obsidian_llm_wiki/` và gọi các lệnh sau:
 
 | Skill | Cú pháp | Khi nào dùng & Chức năng | Mức suy luận (Effort) | Đầu ra chính |
 |---|---|---|---|---|
-| **Biên dịch kiến thức** | `/kb-compile` | Khi có bài viết/sách mới ném vào `raw/articles/` hoặc sau khi vừa chạy `/kb-colluni`. AI biến nội dung thô thành các note nguyên tử tại `concepts/` và `entities/`. Trước khi ghi, AI tự tìm các note liên quan trong wiki (cả note được link tới) để cập nhật thay vì tạo trùng và phát hiện mâu thuẫn; nếu ảnh hưởng ≥ 10 trang sẽ hỏi bạn trước. | 🧠 **High** | `wiki/`, `index.md`, `log.md` |
-| **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn. Nếu wiki thiếu dữ liệu, AI hỏi bạn trước khi tìm web (nguồn web ghi rõ URL, gắn nhãn chưa kiểm chứng). | 🧠 **High** | `reports/<slug>.md` |
-| **Kiểm tra sức khỏe** | `/kb-health` | Quét toàn bộ kho trung tâm để phát hiện link gãy, note mồ côi, sai định dạng frontmatter, và rà mâu thuẫn giữa các note (cần đọc hiểu nội dung). | 🧠 **High** | `wiki/TODO.md` |
-| **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, tự động ẩn biến/đường dẫn nội bộ nhạy cảm và gom về kho trung tâm. | ⚖️ **Medium** | `raw/articles/<slug>.md` |
+| **Biên dịch kiến thức** | `/kb-compile` | Khi có bài viết/sách mới ném vào `raw/articles/` hoặc sau khi vừa chạy `/kb-colluni`. AI biến nội dung thô thành các note nguyên tử tại `concepts/` và `entities/`. Trước khi ghi, AI chọn note liên quan từ `index.md` và grep tên khái niệm trước khi tạo trang mới (để cập nhật thay vì tạo trùng và phát hiện mâu thuẫn), nêu 3-5 điểm chính cùng danh sách trang sẽ tạo/cập nhật; nếu ảnh hưởng ≥ 10 trang sẽ hỏi bạn trước. | 🧠 **High** | `wiki/`, `index.md`, `log.md` |
+| **Nghiên cứu chủ đề** | `/kb-report <chủ đề>` | Khi muốn nghiên cứu, so sánh công nghệ mới (ví dụ: so sánh Kafka vs RabbitMQ). AI tổng hợp sâu và lưu báo cáo dài hạn; nếu đã có báo cáo cùng câu hỏi thì cập nhật báo cáo cũ. Nếu wiki thiếu dữ liệu, AI hỏi bạn trước khi tìm web (nguồn web ghi rõ URL, gắn nhãn chưa kiểm chứng). | 🧠 **High** | `reports/<slug>.md` |
+| **Kiểm tra sức khỏe** | `/kb-health` | Script quét toàn kho để phát hiện link gãy, note mồ côi, note thiếu trong index, sai frontmatter/tag và nguồn `raw/` bị sửa; AI rà mâu thuẫn giữa các note (mặc định chỉ note mới đổi từ lần health trước) và gợi ý khái niệm chưa có trang. | 🧠 **High** | `wiki/TODO.md` |
+| **Thu thập từ dự án** | `/kb-colluni` | **(Chỉ có ở Kho trung tâm)** Khi các dự án code đã tích lũy nhiều pattern hay. AI hỏi đường dẫn dự án, quét thư mục `universal/`, liệt kê ứng viên và **chờ bạn xác nhận**, rồi gỡ link nội bộ và thay tên máy chủ, URL nội bộ, thông tin xác thực, tên người, mã định danh riêng bằng mô tả chung. Không ghi đè bài đã gom: nếu nội dung khác thì hỏi bạn. | ⚖️ **Medium** | `raw/articles/<slug>.md` |
 | **Hỏi đáp nhanh** | `/kb-ask <câu hỏi>` | Tra cứu nhanh kiến thức trong wiki, trả lời ngay trong chat (có trích dẫn `[[note]]`), không ghi file. Nếu wiki thiếu, AI **hỏi bạn trước** khi tìm web và gắn nhãn nguồn web là chưa kiểm chứng. | ⚖️ **Medium** | Trả lời trong chat |
-| **Cập nhật mục lục** | `/kb-index` | Xây dựng lại toàn bộ cây danh mục kiến trúc, glossary thuật ngữ và topic map của toàn vault. | ⚡ **Low** | `index.md` |
+| **Cập nhật mục lục** | `/kb-index` | Cập nhật mục lục cho note mới hoặc thay đổi (rebuild toàn bộ khi bạn yêu cầu); tách mục dài và dựng topic map khi vault lớn theo `SCHEMA.md`. | ⚡ **Low** | `index.md` |
 
 ---
 
@@ -122,6 +132,7 @@ docs/wiki/.../universal/             docs/wiki/.../universal/
      /kb-colluni
      ```
    - Nhập đường dẫn tới dự án code (ví dụ: `/home/tdtr/workspace/my-backend-project`).
+   - AI liệt kê các note ứng viên và **dừng chờ bạn xác nhận** gom note nào.
    - AI tự động lọc các note trong `universal/`, lược bỏ tên biến và đường dẫn nhạy cảm của dự án, rồi lưu bản nháp thô vào `obsidian_llm_wiki/raw/articles/`.
 
 2. **Bước 2 - Nạp vào cây tri thức (`/kb-compile`)**:
@@ -145,6 +156,8 @@ Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinki
 | **Suy luận trung bình** | `/kb-colluni`<br>`/kb-ask` | ⚖️ **Sonnet 5.5 (medium)**<br>(Mức Medium) | Thiết lập trong chat / CLI:<br>`/model sonnet`<br>`/effort medium` |
 | **Cấu trúc & Định dạng** | `/kb-index` | ⚡ **$\le$ Sonnet 5.5 (low) hoặc Haiku**<br>(Dùng Haiku hoặc Sonnet 5.5 mức Low / tắt Thinking) | Thiết lập trong chat / CLI:<br>`/model haiku`<br>hoặc `/model sonnet` kèm `/effort low` |
 
+> Bảng trên dùng tên lệnh của Claude Code. Với Gemini/Antigravity (`.agents/`), chọn model và mức suy luận tương đương.
+
 ---
 
 ### Chi tiết vì sao chọn cấu hình này:
@@ -152,22 +165,22 @@ Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinki
 1. **Tại sao dùng Sonnet 5.5 (high) cho Compile, Report, Health?**:
    - **`/kb-compile`**: Cần đọc hiểu đa tầng, bóc tách đúng bản chất khái niệm (atomic concept), kiểm tra xem có mâu thuẫn (contradiction) với các note cũ hay không.
    - **`/kb-report`**: Cần điều tra sâu xuyên suốt repo/codebase, liên kết nhiều giả thuyết logic để giải bài toán kỹ thuật phức tạp.
-   - **`/kb-health`**: Script chỉ bắt được lỗi máy móc (link gãy, note mồ côi, note cũ). Phần "Agent Sweep" mới là phần chính: tìm mâu thuẫn giữa các note, đối chiếu tài liệu với code (drift), kiểm tra `index.md`/frontmatter/taxonomy. Đây là các việc cần đọc hiểu ngữ nghĩa nên không thể dùng mức Low.
+   - **`/kb-health`**: Script lo các lỗi máy móc (link gãy, note mồ côi, index, frontmatter/tag, source drift, note cũ). Phần "Agent Sweep" mới cần suy luận: tìm mâu thuẫn giữa các note và đối chiếu tài liệu với code (drift). Đây là việc cần đọc hiểu ngữ nghĩa nên không thể dùng mức Low.
    - *→ Mức High giúp model có đủ không gian "tư duy" để xử lý và liên kết dữ liệu phức tạp mà không bị ảo giác.*
 
 2. **Tại sao dùng Sonnet 5.5 (medium) cho Colluni, Ask?**:
    - **`/kb-colluni`**: Cần trừu tượng hóa code cụ thể của dự án thành bài học tổng quát và làm sạch dữ liệu nhạy cảm nội bộ, nhưng phạm vi mỗi lần chạy hẹp và có quy trình rõ ràng nên Medium là đủ.
-   - **`/kb-ask`**: Dù chỉ trả lời nhanh, AI vẫn phải đi theo link `[[...]]` giữa các note, chọn note liên quan, trích dẫn đúng nguồn và nhận ra khi wiki chưa đủ thông tin (để hỏi bạn trước khi tìm web). Câu hỏi cần tổng hợp nhiều nguồn thì dùng `/kb-report`.
+   - **`/kb-ask`**: Dù chỉ trả lời nhanh, AI vẫn phải chọn đúng note từ index, trích dẫn đúng nguồn và nhận ra khi wiki chưa đủ thông tin (để hỏi bạn trước khi tìm web). Câu hỏi cần tổng hợp nhiều nguồn thì dùng `/kb-report`.
 
 3. **Tại sao chỉ cần $\le$ Sonnet 5.5 (low) hoặc Haiku cho Index?**:
-   - **`/kb-index`**: Tác vụ máy móc: gom danh sách note và sắp xếp lại cây mục lục, glossary theo mẫu có sẵn.
-   - *→ Dùng Haiku hoặc Sonnet 5.5 ở mức Low giúp hoàn thành ngay trong vài giây, tiết kiệm tối đa chi phí token mà kết quả vẫn chính xác 100%.*
+   - **`/kb-index`**: Tác vụ gần như máy móc: lấy danh sách note mới hoặc thay đổi (từ script) rồi cập nhật mục lục, glossary theo mẫu có sẵn.
+   - *→ Dùng Haiku hoặc Sonnet 5.5 ở mức Low giúp hoàn thành ngay trong vài giây, tiết kiệm tối đa chi phí token mà kết quả vẫn đủ tốt cho tác vụ theo khuôn mẫu.*
 
 ---
 
 ## Phần 5: Tùy chỉnh skill (số hop, ngưỡng, giới hạn)
 
-Skill chỉ là file Markdown (`.claude/skills/<tên>/SKILL.md`, bản sao ở `.agents/skills/`), còn script dùng chung nằm ở `.claude/scripts/` và `.agents/scripts/`, nên bạn có thể **nhờ LLM sửa trực tiếp** để đổi hành vi, không cần code.
+Skill chỉ là file Markdown (`.claude/skills/<tên>/SKILL.md` là bản gốc, `.agents/skills/` được sinh từ đó), còn script dùng chung nằm ở `.claude/scripts/` (bản chép ở `.agents/scripts/`), nên bạn có thể **nhờ LLM sửa trực tiếp** để đổi hành vi, không cần code.
 
 **Luồng tra cứu của `/kb-ask` và `/kb-report`** gọn, theo thứ tự:
 1. **Tìm note liên quan**: AI đọc `index.md` (file lớn thì đọc phần liên quan hoặc grep), tự phân tích câu hỏi và chọn các mục phù hợp nhất bằng phán đoán. Chỉ đọc README thư mục khi index chưa phủ chủ đề. Nếu catalog không có mục khớp, hoặc trước khi kết luận wiki thiếu, AI grep từ khóa (kèm từ đồng nghĩa) trên `wiki/` và `reports/`.
@@ -184,7 +197,7 @@ Muốn đổi, ra lệnh cho LLM, ví dụ:
 Sửa skill kb-report: luôn dùng outline.py với 2 hop.
 Sửa skill kb-ask: không dùng outline.py, chỉ đọc index và grep.
 ```
-Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/` để không lệch nhau.
+Hãy sửa trong `.claude/`, rồi chạy `python3 sync_agents.py` để `.agents/` khớp lại (xem Phần 6).
 
 **Các giá trị cấu hình khác có thể nhờ LLM đổi** (ghi rõ file cần sửa; nếu một giá trị xuất hiện ở nhiều file thì phải đổi đủ để không lệch):
 
@@ -202,8 +215,11 @@ Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/
 | Xoay vòng `log.md` | Khi quá 500 mục | `kb-health/SKILL.md`, `SCHEMA.md` |
 | Ngưỡng chia mục trong `index.md` | > 50 mục / mục | `SCHEMA.md` |
 | Tạo `topic-map.md` | Khi quá 200 trang | `SCHEMA.md` |
-| Xác nhận trước khi sửa hàng loạt | ≥ 10 trang | `CLAUDE.md` / `AGENTS.md` |
+| Xác nhận trước khi sửa hàng loạt | ≥ 10 trang | `SCHEMA.md`, `CLAUDE.md`/`AGENTS.md`, `kb-compile/SKILL.md`, `kb-index/SKILL.md`, `kb-colluni/SKILL.md` |
 | Số mục cuối `log.md` đọc khi khởi động | 5 mục gần nhất | `kb-report/SKILL.md`, `kb-compile/SKILL.md` |
+| Phạm vi rà mâu thuẫn của `/kb-health` | Theo gia tăng (chỉ note mới đổi từ lần health trước); rà toàn bộ khi bạn yêu cầu | `kb-health/SKILL.md` |
+| `/kb-index` cập nhật | Gia tăng mặc định; rebuild toàn bộ khi bạn yêu cầu; hỏi nếu có mục bị xóa hoặc từ 10 mục thay đổi | `kb-index/SKILL.md` |
+| Định nghĩa `sha256` của `raw/` | Văn bản: hash phần thân (sau frontmatter, đã strip); nhị phân: hash file gốc | `SCHEMA.md`, `kb-compile/SKILL.md`, `kb-colluni/SKILL.md`, `check_health.py` |
 
 Ví dụ: `Sửa kb-health: đổi ngưỡng stale từ 90 ngày thành 180 ngày (cả SKILL.md và check_health.py).`
 
@@ -261,15 +277,23 @@ Thư mục `raw/` là **nguồn sự thật bất biến (Immutable Source)**. F
 | Lint | `/kb-health` | Có thêm đối chiếu tài liệu với code và mục gợi ý (khái niệm chưa có trang) |
 | Index và log | `/kb-index` | Quy tắc quy mô (tách mục 50, bản đồ chủ đề 200, xoay log 500) nằm ở `SCHEMA.md` |
 
-**Đồng bộ `.claude/` và `.agents/`**: `.claude/` là bản gốc, `.agents/` (cho Gemini/Antigravity) được sinh ra từ đó. Sau khi sửa skill, script hoặc references trong `.claude/`, chạy ở thư mục gốc:
+**Đồng bộ `.claude/` và `.agents/`**: `.claude/` là bản gốc, `.agents/` (cho Gemini/Antigravity) được sinh ra từ đó, áp dụng cho cả `obsidian_llm_wiki` và `llm_wiki_4pj`. Sau khi sửa skill, script hoặc references trong `.claude/`, chạy ở thư mục gốc:
 ```bash
 python3 sync_agents.py --check   # chỉ báo chỗ lệch
 python3 sync_agents.py           # ghi .agents/
 ```
-Script đổi tiền tố đường dẫn `.claude/` thành `.agents/` và công cụ lấy URL của `/kb-compile` (`WebFetch` thành `read_url_content`); script Python được chép nguyên. `CLAUDE.md` và `AGENTS.md` không bị đồng bộ vì có nội dung riêng cho từng công cụ.
+Script đổi tiền tố đường dẫn `.claude/` thành `.agents/` và công cụ lấy URL của `/kb-compile` (`WebFetch` thành `read_url_content`); script Python được chép nguyên. `CLAUDE.md` và `AGENTS.md` không bị đồng bộ vì có nội dung riêng cho từng công cụ. Dự án đã cài từ `llm_wiki_4pj` thì cập nhật theo mục "Cập nhật skill cho dự án đã cài" ở Phần 1.
 
-**Git và lịch sử nội dung**: ở nhánh `main`, nội dung wiki (`wiki/*/*`, `reports/*`, `index.md`, `log.md`, `raw/articles/*`) nằm trong `.gitignore` nên **không có lịch sử**; nếu một skill ghi hỏng thì git không khôi phục được. Để có lịch sử mà vẫn riêng tư, dùng nhánh `private/vault-history`:
+**Git, nhánh private và worktree**: ở nhánh `main`, nội dung wiki (`wiki/*/*`, `reports/*`, `index.md`, `log.md`, `raw/articles/*`) nằm trong `.gitignore` nên **không có lịch sử**; nếu một skill ghi hỏng thì git không khôi phục được. Để có lịch sử mà vẫn riêng tư, dùng nhánh `private/vault-history`:
 - Nhánh này bỏ các ignore của nội dung, nên note, báo cáo, index và log được commit và có lịch sử. `raw/binary/`, `raw/assets/`, khóa và cấu hình plugin Obsidian, `.env*` vẫn bị ignore.
 - **Không bao giờ đẩy nhánh này lên remote.** Hook `pre-push` cục bộ từ chối mọi nhánh `private/*`, nhưng hook chỉ nằm trong máy bạn (không theo repo khi clone).
-- Commit riêng thay đổi `.gitignore` trước, rồi mới commit nội dung. Đừng chuyển về `main` khi còn thay đổi `.gitignore` chưa commit.
-- Khi cập nhật skill ở `main`, merge vào nhánh private và giữ bản `.gitignore` của nhánh private nếu xung đột.
+- **Không `git switch` giữa hai nhánh trong cùng một thư mục**: các file nội dung chỉ được theo dõi ở nhánh private, nên chuyển sang `main` sẽ gỡ chúng khỏi ổ đĩa (dữ liệu vẫn còn trong commit, quay lại nhánh private sẽ khôi phục). Hãy dùng hai thư mục (git worktree):
+
+| Thư mục | Nhánh | Dùng cho |
+|---|---|---|
+| Thư mục chính của repo | `private/vault-history` | Mở vault trong Obsidian, chạy `/kb-*` trên nội dung, commit lịch sử nội dung |
+| Worktree (ví dụ `../obsidian-main`, tạo bằng `git worktree add ../obsidian-main main`) | `main` | Sửa thiết kế chung (skill, script, `SCHEMA.md`, `CLAUDE.md`, `AGENTS.md`, `TUTORIAL.md`) rồi đẩy lên remote |
+
+- Sửa thiết kế ở worktree `main`: chạy `python3 sync_agents.py --check`, commit, `git push origin main`; sau đó ở thư mục chính chạy `git merge main` (nếu xung đột ở `.gitignore` thì giữ bản của nhánh private).
+- Nếu lỡ sửa file thiết kế ở nhánh private, commit ở đó rồi đưa riêng các file thiết kế sang `main` bằng `git checkout private/vault-history -- <file>` trong worktree (không lấy nội dung vault và `.gitignore`).
+- Commit riêng thay đổi `.gitignore` của nhánh private trước, rồi mới commit nội dung.

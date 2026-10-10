@@ -6,6 +6,7 @@ One repository containing two separate wiki projects, each with its own structur
 .
 ├── obsidian_llm_wiki/   # General knowledge vault
 ├── llm_wiki_4pj/        # Wiki scaffold for software projects
+├── sync_agents.py       # Generates each .agents/ (Gemini) from its .claude/ (Claude Code)
 └── TUTORIAL.md          # Setup and usage guide
 ```
 
