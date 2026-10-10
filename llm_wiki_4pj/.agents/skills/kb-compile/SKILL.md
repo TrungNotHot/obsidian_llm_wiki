@@ -49,7 +49,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - **Page Thresholds** (per `docs/SCHEMA.md`): Only create a dedicated page if an entity/concept appears in $\ge 2$ sources OR is central to this source. Avoid creating clutter for passing mentions.
    - For pages above the split threshold in `docs/SCHEMA.md`, decompose into sub-topics.
    - **Find related existing pages (before creating or editing)**:
-     - read `docs/index.md` (if it is large, read the relevant sections or grep it) and pick the entries matching the concepts/entities in the source (including broader or related ones) by judgement.
+     - Read `docs/index.md` (if it is large, read the relevant sections or grep it) and pick the entries matching the concepts/entities in the source (including broader or related ones) by judgement.
      - Before creating a new page, grep `docs/wiki/` for its name and synonyms: a miss here silently causes duplicate pages or missed contradictions. Read the matches.
      - For a page you will edit, you may run `python3 .agents/scripts/outline.py docs --seeds <those-pages> --hops 1` (note names without `.md`, comma-separated, no spaces) to see the pages it links to and from.
      - Update an existing page instead of creating a near-duplicate.
@@ -57,6 +57,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - **Mass-Update Guardrail**: If the planned ingestion will touch **10 or more** existing wiki pages, summarize the affected notes and confirm the update scope with the user before applying edits.
 
 4. **Step 4 — Update or Create Pages with Contradiction Handling**:
+   - **Preview**: in an interactive run, before writing, show the user 3-5 key takeaways from the source and the list of pages you will create or update, then continue (the Mass-Update Guardrail still applies). Skip this in non-interactive or bulk runs.
    - **Concepts**: Save/update in `docs/wiki/concepts/universal/<slug>.md` (if general/reusable pattern) or `docs/wiki/concepts/local/<slug>.md` (if project-specific).
    - **Entities**: Save/update in `docs/wiki/entities/universal/<slug>.md` (if core platform/engine) or `docs/wiki/entities/local/<slug>.md` (if project-specific source/service).
    - **Contradiction Policy**: If new info conflicts with existing wiki content, **check dates first** (a newer source or current code generally supersedes an older one; update the page and say so). Only when the conflict is genuine and unresolved:
@@ -79,7 +80,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - Append to `docs/log.md`:
      ```markdown
      ## [YYYY-MM-DD] Compile | <Source Title>
-     - Summarized: `[[SourceNote]]`
+     - Source: `raw/articles/<file>.md`
      - Created/Updated: `[[ConceptOrEntityPage]]`
      - Contradictions flagged: None (or list conflicting notes)
      ```

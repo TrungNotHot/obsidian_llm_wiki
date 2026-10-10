@@ -35,6 +35,7 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
 2. **Layer 2 — Agent Sweep (mandatory, covers what the script cannot: semantic checks)**:
    - **Contradiction review** (needs reading, script regex cannot do this): the candidates come from the script, deterministically, so no area is silently skipped: its "Contradiction-review clusters" (specific tags with 2-8 notes) and "Contradiction-review pairs" (linked notes sharing 2+ topic tags, document-type tags excluded). **Incremental by default**: review only the clusters and pairs that include a note created or updated (`updated:` in frontmatter) after the date of the previous `Health` entry in `docs/log.md`; do a **full sweep** when the user asks for it or when there is no previous `Health` entry. For each reviewed candidate (use `python3 .agents/scripts/outline.py docs --seeds <notes> --hops 1` for a quick look at titles and headings when a cluster is large) judge only whether the claims genuinely conflict, per the `docs/SCHEMA.md` contradiction policy. Do not replace the script's candidate list with your own picks; apart from the incremental rule, if you skip any candidate, state which and why in `docs/log.md`.
    - **Code vs doc drift**: compare active codebase components, modules, services, or data contracts (e.g. `src/`, `app/`, `lib/`, `dags/`) against `docs/wiki/entities/`; flag modules with no matching entity page.
+   - **Gaps & suggestions** (optional, brief): concepts or terms mentioned in several notes that have no page of their own, and topics where a new source or a web search would fill a gap. List them as suggestions in `TODO.md`; do not create pages or search the web on your own.
    - **Log rotation**: if `docs/log.md` exceeds 500 entries, rotate to `docs/log-YYYY.md` and start fresh.
    - If any check is skipped, state which one and why in `docs/log.md` — silent skipping is not allowed.
 
@@ -54,6 +55,9 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
 
      ## 🟢 Low Severity: Orphan Pages & Taxonomy Cleanup
      - [ ] Note `[[OrphanNote]]` has 0 inbound links; link it from `docs/index.md` or a concept note
+
+     ## 💡 Suggestions (optional)
+     - Concept `X` is mentioned in several notes but has no page of its own
      ```
 
 4. **Log the Health Check**:

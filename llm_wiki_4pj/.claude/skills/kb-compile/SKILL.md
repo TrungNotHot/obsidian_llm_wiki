@@ -57,6 +57,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - **Mass-Update Guardrail**: If the planned ingestion will touch **10 or more** existing wiki pages, summarize the affected notes and confirm the update scope with the user before applying edits.
 
 4. **Step 4 — Update or Create Pages with Contradiction Handling**:
+   - **Preview**: in an interactive run, before writing, show the user 3-5 key takeaways from the source and the list of pages you will create or update, then continue (the Mass-Update Guardrail still applies). Skip this in non-interactive or bulk runs.
    - **Concepts**: Save/update in `docs/wiki/concepts/universal/<slug>.md` (if general/reusable pattern) or `docs/wiki/concepts/local/<slug>.md` (if project-specific).
    - **Entities**: Save/update in `docs/wiki/entities/universal/<slug>.md` (if core platform/engine) or `docs/wiki/entities/local/<slug>.md` (if project-specific source/service).
    - **Contradiction Policy**: If new info conflicts with existing wiki content, **check dates first** (a newer source or current code generally supersedes an older one; update the page and say so). Only when the conflict is genuine and unresolved:
@@ -79,7 +80,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
    - Append to `docs/log.md`:
      ```markdown
      ## [YYYY-MM-DD] Compile | <Source Title>
-     - Summarized: `[[SourceNote]]`
+     - Source: `raw/articles/<file>.md`
      - Created/Updated: `[[ConceptOrEntityPage]]`
      - Contradictions flagged: None (or list conflicting notes)
      ```

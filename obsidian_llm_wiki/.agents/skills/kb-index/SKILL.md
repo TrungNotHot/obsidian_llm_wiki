@@ -34,7 +34,7 @@ Ensures that as the wiki grows, developers and AI agents can always navigate the
    - If any entry is **removed**, or **10 or more** entries are added/changed, show the user this summary (with the removed entries) and **ask for confirmation before writing**.
    - If only a few notes changed, edit the affected entries in place instead of regenerating the whole file.
 
-3c. **Scale rules**: apply the "Index Scaling & Log Rotation" rules in `SCHEMA.md` (split sections over 50 entries; add a topic map above 200 entries).
+3c. **Scale rules**: apply the "Index Scaling & Log Rotation" rules in `SCHEMA.md` (split sections over 50 entries; add a topic map above 200 entries). Do not keep a manual page counter in the index header (it drifts); count entries when a threshold needs checking.
 
 4. **Log the Operation**:
    - Append to `log.md`:
