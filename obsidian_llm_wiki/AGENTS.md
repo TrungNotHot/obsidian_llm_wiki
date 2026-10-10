@@ -52,7 +52,7 @@ RTK filters and compresses command output before it reaches the LLM context, cut
 #### Constraints
 - **NO Automatic Git Commits**: Do NOT run `git commit` or automatically commit changes unless the user explicitly instructs you to commit.
 - Always leave modified files staged/unstaged for the user to review and commit manually.
-- **Vault Privacy Awareness**: Note `.gitignore` boundaries — note contents in `raw/articles/*`, `wiki/*/*`, `reports/*`, as well as `index.md`, `log.md`, and `wiki/TODO.md` are local-only / gitignored by default. Only constitutional, design, and agent configuration files are tracked in git.
+- **Vault Privacy Awareness**: Note `.gitignore` boundaries — note contents in `raw/articles/*`, `wiki/*/*`, `reports/*`, as well as `index.md`, `log.md`, and `wiki/TODO.md` are local-only / gitignored by default. Only constitutional, design, and agent configuration files are tracked in git. On the `private/*` branch these files are tracked for history; that branch must never be pushed to a remote.
 
 ---
 

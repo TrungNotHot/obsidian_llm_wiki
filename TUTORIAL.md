@@ -246,3 +246,30 @@ Thư mục `raw/` là **nguồn sự thật bất biến (Immutable Source)**. F
   - `reports/`: AI xuất các bài nghiên cứu/phân tích sâu dài hạn.
   - `wiki/TODO.md`: AI ghi danh sách link gãy, note mồ côi để theo dõi xử lý.
 - ⛔ **Quy tắc bất biến đối với AI**: AI **KHÔNG BAO GIỜ chỉnh sửa nội dung trong `raw/`** sau khi đã lưu, nhằm đảm bảo nguồn gốc dữ liệu luôn nguyên bản.
+
+---
+
+## Phần 6: Đối chiếu với thiết kế gốc, đồng bộ và lưu ý git
+
+**Ánh xạ với LLM Wiki gốc** (Karpathy, Hermes):
+
+| Thao tác gốc | Skill ở đây | Ghi chú |
+|---|---|---|
+| Ingest: thu nguồn vào `raw/` | `/kb-compile` (nguồn cục bộ, URL, file nhị phân) và `/kb-colluni` (nguồn lấy từ vault dự án khác, chỉ ghi `raw/articles/`) | `/kb-colluni` là bước thu nguồn xuyên vault, sau đó chạy `/kb-compile` để biên dịch vào `wiki/` |
+| Ingest: biên dịch thành trang wiki | `/kb-compile` | Hiển thị điểm chính và danh sách trang trước khi ghi (khi chạy tương tác) |
+| Query | `/kb-ask` (chỉ đọc, trả lời trong chat) và `/kb-report` (lưu thành báo cáo, rút khái niệm tái sử dụng về wiki) | Hai biến thể của một thao tác: khác nhau ở chỗ có lưu file hay không |
+| Lint | `/kb-health` | Có thêm đối chiếu tài liệu với code và mục gợi ý (khái niệm chưa có trang) |
+| Index và log | `/kb-index` | Quy tắc quy mô (tách mục 50, bản đồ chủ đề 200, xoay log 500) nằm ở `SCHEMA.md` |
+
+**Đồng bộ `.claude/` và `.agents/`**: `.claude/` là bản gốc, `.agents/` (cho Gemini/Antigravity) được sinh ra từ đó. Sau khi sửa skill, script hoặc references trong `.claude/`, chạy ở thư mục gốc:
+```bash
+python3 sync_agents.py --check   # chỉ báo chỗ lệch
+python3 sync_agents.py           # ghi .agents/
+```
+Script đổi tiền tố đường dẫn `.claude/` thành `.agents/` và công cụ lấy URL của `/kb-compile` (`WebFetch` thành `read_url_content`); script Python được chép nguyên. `CLAUDE.md` và `AGENTS.md` không bị đồng bộ vì có nội dung riêng cho từng công cụ.
+
+**Git và lịch sử nội dung**: ở nhánh `main`, nội dung wiki (`wiki/*/*`, `reports/*`, `index.md`, `log.md`, `raw/articles/*`) nằm trong `.gitignore` nên **không có lịch sử**; nếu một skill ghi hỏng thì git không khôi phục được. Để có lịch sử mà vẫn riêng tư, dùng nhánh `private/vault-history`:
+- Nhánh này bỏ các ignore của nội dung, nên note, báo cáo, index và log được commit và có lịch sử. `raw/binary/`, `raw/assets/`, khóa và cấu hình plugin Obsidian, `.env*` vẫn bị ignore.
+- **Không bao giờ đẩy nhánh này lên remote.** Hook `pre-push` cục bộ từ chối mọi nhánh `private/*`, nhưng hook chỉ nằm trong máy bạn (không theo repo khi clone).
+- Commit riêng thay đổi `.gitignore` trước, rồi mới commit nội dung. Đừng chuyển về `main` khi còn thay đổi `.gitignore` chưa commit.
+- Khi cập nhật skill ở `main`, merge vào nhánh private và giữ bản `.gitignore` của nhánh private nếu xung đột.

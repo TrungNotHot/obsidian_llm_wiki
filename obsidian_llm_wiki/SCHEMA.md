@@ -40,7 +40,7 @@ tags:
   - architecture
   - concept
 sources:
-  - raw/articles/source-name.md # optional for purely conceptual/synthesis notes
+  - raw/articles/source-name.md # optional for purely conceptual/synthesis notes; reports may also list the wiki notes they relied on
 confidence: high # high | medium | low (degree of certainty/corroboration); do not use high without support from 2+ sources
 contested: false # set true if unresolved contradictions exist
 contradictions: [] # list of conflicting note slugs, e.g. [legacy-system-spec]
@@ -63,6 +63,7 @@ sha256: <hex-digest> # text sources: hash of the note body (UTF-8 text after the
 ---
 ```
 `kb-health` re-verifies the hash of text sources only; notes with `original_type` (binary conversions) are skipped.
+Cross-vault harvests by `/kb-colluni` use `source_vault` and `source_file` (path inside the source vault) instead of `source_url`, with a body `sha256` and no `original_type`.
 
 ---
 

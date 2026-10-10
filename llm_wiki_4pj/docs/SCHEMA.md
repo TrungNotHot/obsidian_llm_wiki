@@ -46,7 +46,7 @@ tags:
   - architecture
   - pipeline
 sources:
-  - docs/raw/articles/source-name.md # optional for purely conceptual/synthesis notes
+  - docs/raw/articles/source-name.md # optional for purely conceptual/synthesis notes; reports may also list the wiki notes they relied on
 confidence: high # high | medium | low (degree of certainty/corroboration); do not use high without support from 2+ sources
 contested: false # set true if unresolved contradictions exist
 contradictions: [] # list of conflicting note slugs, e.g. [legacy-alps-mapping]
