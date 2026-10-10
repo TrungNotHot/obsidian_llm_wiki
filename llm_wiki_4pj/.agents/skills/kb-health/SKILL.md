@@ -25,7 +25,7 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
      - Review "links resolving only to `docs/raw/`": a `[[link]]` whose only match is a raw source usually means the same-named wiki note was deleted or renamed (a raw/ copy would otherwise mask it). Intentional links to raw specs are fine.
      - Check orphan notes in `docs/wiki/` (0 inbound links).
      - Check notes flagged with `contested: true` or `confidence: low`.
-     - Check stale notes (>90 days without updates) and oversized pages (>300 lines, `docs/wiki/` notes only; `raw/` and `reports/` are not split).
+     - Check "Outdated vs cited source" (page `updated` is >90 days older than a raw source it cites: likely stale) and "Aging candidates" (>90 days since update). Age alone is not staleness: report an aging note as stale only if a newer source or note on the same entities exists. Check oversized pages (>300 lines, `docs/wiki/` notes only; `docs/raw/` and `docs/reports/` are not split).
    - The script is fast but blind to semantic issues — it NEVER replaces Layer 2 below.
    - **Clipper author-link policy**: Obsidian Web Clipper writes `author: "[[name]]"` wikilinks in `docs/raw/` frontmatter. These are never real links — normalize to plain text (`author: "name"`) on sight without asking. The script already excludes frontmatter from link scanning, so this is a silent normalization, not a broken-link fix.
 
@@ -51,7 +51,7 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
 
      ## 🟡 Medium Severity: Contested Pages & Stale Notes
      - [ ] Note `[[NoteName]]` is marked `contested: true` with conflicting claims
-     - [ ] Note `[[OldNote]]` has not been updated in >90 days
+     - [ ] Note `[[OldNote]]` is older than a newer source on the same entities (update it, or archive it per the `SCHEMA.md` Archiving Workflow if superseded)
 
      ## 🟢 Low Severity: Orphan Pages & Taxonomy Cleanup
      - [ ] Note `[[OrphanNote]]` has 0 inbound links; link it from `docs/index.md` or a concept note

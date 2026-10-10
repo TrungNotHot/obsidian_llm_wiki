@@ -3,10 +3,12 @@
 Candidate outline for /kb-ask and /kb-report (stdlib only, no scoring, no model).
 
 Collects notes reachable from seed notes within N hops (outbound links + backlinks) and prints one
-compact block per note: path, hop, title, tags, confidence and ALL headings. The LLM reads these
+compact block per note: path, hop, title, tags, confidence and ALL headings.
+Order: nearest hop first, then most connected to the other candidates (then name). When --limit
+truncates, the farthest and least connected notes are dropped; connectivity is not relevance. The LLM reads these
 outlines (level 1) and picks which notes to read in full (level 2).
 
-  outline.py <vault> --seeds a,b --hops 2 [--limit 40] [--max-headings 25]
+  outline.py <vault> --seeds a,b --hops 2 [--limit N] [--max-headings 25]   # --limit default: 20 / 40 / 60 for 1 / 2 / 3 hops
   outline.py --selftest
 """
 
@@ -75,9 +77,22 @@ def reach(notes, seeds, hops):
     return dist
 
 
+def default_limit(hops):
+    return {1: 20, 2: 40}.get(hops, 60)  # 20 / 40 / 60 for 1 / 2 / 3+ hops
+
+
 def render(notes, dist, limit, max_heads):
-    order = sorted(dist, key=lambda k: (dist[k], k))
-    out = [f"candidates: {len(order)}" + (f" (showing first {limit}; narrow --seeds/--hops)" if len(order) > limit else "")]
+    # Order: nearest hop first; within a hop, the most connected to the other candidates first (then name),
+    # so truncation by --limit drops the least connected notes, not the alphabetically last ones.
+    back = {k: set() for k in dist}
+    for k in dist:
+        for t in notes[k]["links"]:
+            if t in back:
+                back[t].add(k)
+    deg = {k: len((notes[k]["links"] | back[k]) & dist.keys()) for k in dist}
+    order = sorted(dist, key=lambda k: (dist[k], -deg[k], k))
+    note = f" (showing first {limit}, nearest hop then most connected; narrow --seeds first, then --hops)" if len(order) > limit else ""
+    out = [f"candidates: {len(order)}{note}"]
     for k in order[:limit]:
         n = notes[k]
         head = f"[hop {dist[k]}] {n['path']} | title: {n['title']}"
@@ -115,6 +130,17 @@ def selftest():
         txt = render(notes, reach(notes, ["a"], 1), 40, 25)
         assert "[hop 0] wiki/a.md | title: Alpha | tags: x, y | confidence: high" in txt and "# Alpha > ## Init" in txt, txt
         assert "showing first 1" in render(notes, reach(notes, ["a"], 1), 1, 25)
+        assert [default_limit(h) for h in (1, 2, 3, 4)] == [20, 40, 60, 60]
+        big = {f"n{i}": {"links": set(), "title": "t", "tags": [], "conf": "", "heads": [], "path": f"wiki/n{i}.md"} for i in range(10)}
+        first = render(big, {k: 0 for k in big}, 4, 25).splitlines()[0]
+        assert "narrow --seeds first, then --hops" in first and "--limit" not in first, first  # truncated: narrow, never raise the limit
+        assert "narrow" not in render(big, {k: 0 for k in big}, 10, 25).splitlines()[0]  # not truncated: no hint
+        # truncation keeps the best connected note of a hop, not the alphabetically first
+        (v / "wiki/b0.md").write_text("# B0\nlinks [[a]]\n")
+        (v / "wiki/zhub.md").write_text("# Z\nlinks [[a]] [[b0]] [[b]]\n")
+        n2 = load(v)
+        top = render(n2, reach(n2, ["a"], 1), 2, 25).splitlines()
+        assert any("zhub.md" in l for l in top) and not any("b0.md" in l for l in top), top  # seed first, then the most connected hop-1 note
     print("selftest ok")
 
 
@@ -123,7 +149,7 @@ def main():
     ap.add_argument("vault", nargs="?", default=".")
     ap.add_argument("--seeds", default="", help="comma-separated note names (no extension)")
     ap.add_argument("--hops", type=int, default=2)
-    ap.add_argument("--limit", type=int, default=40, help="max notes printed")
+    ap.add_argument("--limit", type=int, default=None, help="max notes printed (default 20/40/60 for 1/2/3 hops)")
     ap.add_argument("--max-headings", type=int, default=25, help="max headings printed per note")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
@@ -140,7 +166,7 @@ def main():
     if missing:
         print(f"warning: seed(s) not found (use the file name without .md): {', '.join(missing)}", file=sys.stderr)
     dist = reach(notes, seeds, a.hops)
-    print(render(notes, dist, a.limit, a.max_headings))
+    print(render(notes, dist, a.limit or default_limit(a.hops), a.max_headings))
 
 
 if __name__ == "__main__":

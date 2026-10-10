@@ -19,8 +19,12 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
    - Scan the last 20 lines of `docs/log.md` to see recent queries or investigations.
 
 2. **Step 1 — Search & Read Context**:
-   - Find seed notes: analyze the question yourself, identify the concepts it involves (including implied, broader or related ones), and pick the best-covering entries from `docs/index.md` and the folder `README.md` catalogs (`docs/wiki/concepts/`, `docs/wiki/entities/`, `docs/wiki/easy_read/`) by judgement. Use grep on `title:`/`tags:` only to confirm or fill gaps, not as the primary selector.
-   - **Traverse embedded references**: from each seed note follow outbound `[[wikilinks]]`, choosing depth by question type: **1 hop** for a fact lookup, **2 hops** for relationships or summaries, **3 hops** for multi-hop reasoning, find backlinks via Grep `\[\[<note-name>` across `docs/wiki/` and `docs/reports/` (prior reports on the topic), read `contradictions:` partners, and open `sources:` files in `docs/raw/` when primary-source detail is needed. Rank in two levels: **Level 1 (outline)**: run `python3 .agents/scripts/outline.py docs --seeds <seed-notes> --hops <1|2|3> [--limit 40]`. It lists every note reachable by links/backlinks within the hop limit with its title, tags, confidence and ALL headings (no scoring). Read those outlines and **rerank them yourself** by relevance to the question, keeping the best up to the budget below. **Level 2 (full read)**: read the selected notes in full. If `candidates` is within the budget, skip the ranking and read them all; if the list is truncated, narrow the seeds or hops. If the script fails, fall back to grep + your own judgement. Read in full at most **6 notes for 1 hop, 12 for 2 hops, 18 for 3 hops**, picking the most relevant to the question; if coverage is still thin, start a new traversal from a newly found seed instead of going deeper. Keep a list of visited notes to cite in the report.
+   - Find seed notes: analyze the question yourself, identify the concepts it involves (including implied, broader or related ones), and pick the best-covering entries from `docs/index.md` and the folder `README.md` catalogs (`docs/wiki/concepts/`, `docs/wiki/entities/`, `docs/wiki/easy_read/`) by judgement. Use grep on `title:`/`tags:` only to confirm or fill gaps, not as the primary selector. **If the wiki has about 100+ notes, or the catalogs have no matching entry, keyword grep across all of `docs/wiki/` and `docs/reports/` is mandatory** (the index alone may miss relevant content).
+   - **Traverse embedded references** (outline first, then full reads):
+     - **Depth by question type**: **1 hop** for a fact lookup, **2 hops** for relationships or summaries, **3 hops** for multi-hop reasoning.
+     - **Level 1 (outline)**: run `python3 .agents/scripts/outline.py docs --seeds <seed-notes> --hops <1|2|3>`. It lists every note reachable by links and backlinks within the hop limit (including prior reports in `docs/reports/`) with its title, tags, confidence and ALL headings (no scoring), nearest hop first. Read the outlines and **rerank them yourself** by relevance to the question. The output is capped (20 / 40 / 60 notes for 1 / 2 / 3 hops). If it says the list was truncated, do NOT raise `--limit`; rerun with a narrower scope, adjusting in this order: **1) `--seeds`** (drop weakly related seeds, add missing good ones), **2) `--hops`** (only as far as the question type allows). If the script fails, fall back to grep + your own judgement.
+     - **Level 2 (full read)**: read in full at most **6 notes for 1 hop, 12 for 2 hops, 18 for 3 hops** (the seed notes already read in Step 1 are not counted), the most relevant first; if `candidates` is within the budget, skip the ranking and read them all. Also read the `contradictions:` partners of the notes you read, and open `sources:` files in `docs/raw/` when primary-source detail is needed.
+     - If coverage is still thin, start a new traversal from a newly found seed instead of going deeper. Keep a list of visited notes to cite in the report.
    - Cross-check with source code in primary codebase directories (e.g. `src/`, `app/`, `lib/`) when code-level verification is needed.
    - **Web search (when wiki lacks enough info)**: ASK the user for permission first, stating what is missing. Never search silently. If approved, cite every web-sourced claim with its URL in the report and label it as unverified (not yet in `docs/raw/`); set `confidence: medium` or lower.
 
@@ -35,7 +39,7 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
      tags:
        - report
        - <domain-tag>
-     confidence: high | medium
+     confidence: high | medium | low   # not high unless backed by 2+ sources
      contested: false
      contradictions: []
      status: published
@@ -46,7 +50,7 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
      - **Detailed Technical Analysis**: Technical breakdown, interfaces, data models, or logic flow.
      - **Mermaid Diagrams**: Visual architecture, sequence, or ER diagrams.
      - **Backlinks & References**: Obsidian wikilinks `[[...]]` connecting to relevant concept notes and entities.
-     - **External Sources (required if any web/external info was used)**: a dedicated section listing each external source: URL/site, search query used, access date, and which report claims depend on it. Mark them unverified (not in `raw/`). Omit the section only if no external info was used.
+     - **External Sources (required if any web/external info was used)**: a dedicated section listing each external source: URL/site, search query used, access date, and which report claims depend on it. Mark them unverified (not in `docs/raw/`). Omit the section only if no external info was used.
 
 4. **Step 3 — Compounding Loop (File Back to Wiki)**:
    - *Karpathy Principle*: Good answers should compound in the knowledge base, not stay trapped in reports.

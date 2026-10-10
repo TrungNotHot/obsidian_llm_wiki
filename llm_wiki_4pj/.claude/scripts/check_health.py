@@ -42,6 +42,7 @@ def audit_vault(vault_path: Path):
     contested_pages = []
     oversized_pages = []
     stale_pages = []
+    outdated_vs_source = []
     now = datetime.now(timezone.utc)
 
     link_pat = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]*)?\]\]")
@@ -75,6 +76,22 @@ def audit_vault(vault_path: Path):
                         stale_pages.append({"file": rel_path, "updated": upd_match.group(1)})
                 except ValueError:
                     pass
+
+            # Page older than a source it cites: a cited raw/ file was ingested >90 days after the page's `updated`
+            if upd_match:
+                src_block = re.search(r"^sources:\s*(\[.*?\]|\n(?:\s+-\s+.*\n?)+)", fm_text, re.MULTILINE)
+                for src in re.findall(r"raw/[^\s,\]#\"']+\.md", src_block.group(1)) if src_block else []:
+                    sp = vault_path / src
+                    if not sp.exists():
+                        continue
+                    ing = re.search(r"^ingested:\s*(\d{4}-\d{2}-\d{2})", sp.read_text(encoding="utf-8", errors="ignore"), re.MULTILINE)
+                    if ing:
+                        try:
+                            gap = (datetime.strptime(ing.group(1), "%Y-%m-%d") - datetime.strptime(upd_match.group(1), "%Y-%m-%d")).days
+                        except ValueError:
+                            continue
+                        if gap > 90:
+                            outdated_vs_source.append({"file": rel_path, "updated": upd_match.group(1), "source": src, "ingested": ing.group(1)})
 
         # Strip YAML frontmatter: metadata fields (e.g. clipper `author: "[[name]]"`)
         # are plain-text by policy, never real wikilinks — ponytail: frontmatter
@@ -111,6 +128,7 @@ def audit_vault(vault_path: Path):
         "contested": contested_pages,
         "oversized": oversized_pages,
         "stale": stale_pages,
+        "outdated_vs_source": outdated_vs_source,
     }
 
 
@@ -144,7 +162,11 @@ def main():
     for c in result["contested"]:
         print(f"  - {c}")
 
-    print(f"\n🟡 Stale Pages (>90d) ({len(result['stale'])}):")
+    print(f"\n🟡 Outdated vs cited source ({len(result['outdated_vs_source'])}): page `updated` is >90d older than a source it cites")
+    for o in result["outdated_vs_source"][:10]:
+        print(f"  - {o['file']} (updated {o['updated']}; {o['source']} ingested {o['ingested']})")
+
+    print(f"\n🟡 Aging candidates, >90d since update ({len(result['stale'])}): age alone is not staleness; confirm a newer source on the same entities exists")
     for s in result["stale"][:10]:
         print(f"  - {s['file']} (last updated: {s['updated']})")
 

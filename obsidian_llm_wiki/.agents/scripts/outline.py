@@ -3,7 +3,9 @@
 Candidate outline for /kb-ask and /kb-report (stdlib only, no scoring, no model).
 
 Collects notes reachable from seed notes within N hops (outbound links + backlinks) and prints one
-compact block per note: path, hop, title, tags, confidence and ALL headings. The LLM reads these
+compact block per note: path, hop, title, tags, confidence and ALL headings.
+Order: nearest hop first, then most connected to the other candidates (then name). When --limit
+truncates, the farthest and least connected notes are dropped; connectivity is not relevance. The LLM reads these
 outlines (level 1) and picks which notes to read in full (level 2).
 
   outline.py <vault> --seeds a,b --hops 2 [--limit N] [--max-headings 25]   # --limit default: 20 / 40 / 60 for 1 / 2 / 3 hops
