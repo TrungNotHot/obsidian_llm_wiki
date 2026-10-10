@@ -13,6 +13,7 @@ Kho tài liệu này gồm 2 phần độc lập theo triết lý LLM Wiki của
 - **2 plugin** (có sẵn trong `obsidian_llm_wiki/.obsidian/plugins/`; sau khi mở vault, vào *Settings → Community plugins*, tắt Restricted mode và bật):
   - `dataview`: truy vấn/hiển thị ghi chú theo frontmatter.
   - `remotely-save`: đồng bộ vault lên cloud (Optional)
+- **`uv`** (Python): `/kb-compile` dùng khi chuyển file binary (`.pdf`, `.docx`...) sang Markdown (thư viện `markitdown`). Các skill `/kb-ask`, `/kb-report`, `/kb-health` chỉ cần `python3`.
 - **Trình duyệt**: cài extension [Obsidian Web Clipper](https://obsidian.md/clipper) để biến bài viết web thành .md vào `raw/articles/`.
 
 ---
@@ -168,7 +169,20 @@ Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinki
 
 Skill chỉ là file Markdown (`.claude/skills/<tên>/SKILL.md`, bản sao ở `.agents/skills/`), còn script dùng chung nằm ở `.claude/scripts/` và `.agents/scripts/`, nên bạn có thể **nhờ LLM sửa trực tiếp** để đổi hành vi, không cần code.
 
-**Số hop** là số lần "nhảy" qua `[[wikilink]]` từ note tìm thấy đầu tiên khi tra cứu. Mặc định theo loại câu hỏi:
+**Luồng tra cứu của `/kb-ask` và `/kb-report`** gồm 3 bước:
+1. **Chọn seed (note xuất phát)**: AI tự phân tích câu hỏi, xác định các khái niệm liên quan (kể cả khái niệm ngầm hoặc rộng hơn), rồi chọn các mục phù hợp nhất trong `index.md` và README của từng thư mục. Grep `title:`/`tags:` chỉ để xác nhận hoặc bổ sung.
+2. **Outline (tầng 1)**: script `outline.py` đi từ seed qua link và backlink trong số hop cho phép, in ra mỗi note một khối gồm `title`, `tags`, `confidence` (từ frontmatter) và toàn bộ heading `#` trong thân bài. AI đọc outline này rồi tự chọn note liên quan, script không chấm điểm.
+3. **Đọc đầy đủ (tầng 2)**: AI đọc nguyên văn các note đã chọn, trong hạn mức ở bảng dưới. Chỉ mở `raw/` (theo `sources:`) khi wiki thiếu chi tiết.
+
+Chất lượng kết quả phụ thuộc nhiều vào bước 1: hop chỉ mở rộng quanh seed, nên seed sai thì note đúng không vào được outline. Vì vậy `index.md` và README các thư mục cần có mô tả rõ ràng (chạy `/kb-index` khi wiki thay đổi).
+
+**Khi outline bị cắt** (script báo `showing first N ... narrow --seeds first, then --hops`): đừng tăng `--limit`, hãy chạy lại với phạm vi hẹp hơn, chỉnh theo thứ tự ưu tiên:
+1. **`--seeds`**: bỏ các seed kém liên quan, thêm seed đúng còn thiếu. Seed sai thì cả vùng quét sai, tăng hop hay limit chỉ thêm note vô ích.
+2. **`--hops`**: giảm số hop, nhưng không xuống dưới mức loại câu hỏi cần (quan hệ/tóm tắt cần 2, multi-hop cần 3).
+
+`--limit` chỉ là trần số note được in ra (mặc định 20 / 40 / 60 cho 1 / 2 / 3 hop), không làm kết quả liên quan hơn, nên không phải thứ để chỉnh.
+
+**Số hop** là số lần "nhảy" qua `[[wikilink]]` từ seed khi tra cứu. Mặc định theo loại câu hỏi:
 
 | Loại câu hỏi | `/kb-ask` | `/kb-report` |
 |---|---|---|
@@ -187,12 +201,16 @@ Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/
 
 | Cấu hình | Mặc định | Nằm ở đâu |
 |---|---|---|
-| Số note đọc đầy đủ tối đa (`/kb-ask`) | 6 note (1 hop), 12 note (2 hops) | `kb-ask/SKILL.md` |
-| Số note đọc đầy đủ tối đa (`/kb-report`) | 6 / 12 / 18 note (1 / 2 / 3 hops) | `kb-report/SKILL.md` |
-| Rerank 2 tầng: trọng số điểm (title 3, tags 2, tên file 2, heading 1) và ngưỡng shortlist (2 × hạn mức) | Tầng 1 là script, tầng 2 là LLM đọc lướt heading | `.claude/scripts/rerank.py` và `.agents/scripts/rerank.py` (một bản dùng chung cho `kb-ask` và `kb-report`), `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
+| Số note đọc đầy đủ tối đa (`/kb-ask`), không tính các seed đã đọc ở bước 1 | 6 note (1 hop), 12 note (2 hops) | `kb-ask/SKILL.md` |
+| Số note đọc đầy đủ tối đa (`/kb-report`), không tính các seed đã đọc ở bước 1 | 6 / 12 / 18 note (1 / 2 / 3 hops) | `kb-report/SKILL.md` |
+| Số ứng viên outline in ra tối đa (`--limit`) | Mặc định theo hop: 20 / 40 / 60 cho 1 / 2 / 3 hop. Khi bị cắt, AI không tăng limit mà thu hẹp theo thứ tự `--seeds` rồi `--hops` | hàm `default_limit()` trong `.claude/scripts/outline.py` và `.agents/scripts/outline.py`, `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
+| Số heading in ra mỗi note (`--max-headings`) | 25 | tham số của `outline.py` |
+| Cách chạy `outline.py` (một bản dùng chung cho `kb-ask` và `kb-report`) | `--seeds` bắt buộc (tên note không có `.md`, cách nhau bằng dấu phẩy), `--hops` mặc định 2; không hỗ trợ in cả vault; chỉ dùng thư viện chuẩn Python | `.claude/scripts/outline.py` và `.agents/scripts/outline.py` |
+| Khi nào bắt buộc grep toàn bộ `wiki/` và `reports/` để chọn seed (vì `index.md` có thể sót) | Wiki từ khoảng 100 note, hoặc catalog không có mục khớp | `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
 | Có/không cho tìm web, và hỏi trước khi tìm | Chỉ khi wiki thiếu, luôn hỏi trước | `kb-ask/SKILL.md`, `kb-report/SKILL.md`, `CLAUDE.md`/`AGENTS.md` (mục Web Search Policy) |
-| Ngưỡng note "cũ" (stale) | > 90 ngày | `kb-health/SKILL.md` **và** `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py` |
+| Ngưỡng note "cũ" (stale): "Outdated vs cited source" (trang cũ hơn nguồn nó trích dẫn > 90 ngày) và "Aging candidates" (> 90 ngày kể từ lần cập nhật, chỉ coi là cũ nếu có nguồn mới hơn cùng chủ đề) | > 90 ngày | `kb-health/SKILL.md` **và** `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py` |
 | Ngưỡng tách note quá dài | > 300 dòng | `kb-compile/SKILL.md`, `kb-health/SKILL.md`, `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py`, `SCHEMA.md`, `CLAUDE.md`/`AGENTS.md` |
+| Quy tắc `confidence`: không đặt `high` nếu chưa có từ 2 nguồn | 2 nguồn | `SCHEMA.md`, `kb-compile/SKILL.md`, `kb-report/SKILL.md` (mẫu frontmatter) |
 | Điều kiện tạo note mới | Khái niệm xuất hiện trong ≥ 2 nguồn | `kb-compile/SKILL.md`, `SCHEMA.md` |
 | Số link ra tối thiểu mỗi note | 2 | `SCHEMA.md`, `CLAUDE.md` |
 | Xoay vòng `log.md` | Khi quá 500 mục | `kb-health/SKILL.md`, `SCHEMA.md` |

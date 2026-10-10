@@ -54,10 +54,12 @@ Acts as the automated librarian and compiler for incoming information (web artic
 4. **Step 3 — Update or Create Pages with Contradiction Handling**:
    - **Concepts**: Save/update in `wiki/concepts/<slug>.md`.
    - **Entities**: Save/update in `wiki/entities/<slug>.md`.
-   - **Contradiction Policy**: If new info conflicts with existing wiki content:
+   - **Contradiction Policy**: If new info conflicts with existing wiki content, **check dates first** (a newer source or current code generally supersedes an older one; update the page and say so). Only when the conflict is genuine and unresolved:
      - Document both claims with dates and source citations.
      - Set frontmatter: `contested: true` and `contradictions: [other-note-slug]`.
      - Set `confidence: medium` or `low` until reconciled.
+   - **Confidence**: never set `high` without support from 2+ sources.
+   - **Superseded pages**: if a page is fully replaced or decommissioned, follow the Archiving Workflow in `SCHEMA.md` (move to `wiki/_archive/`, drop from `index.md`, mark inbound links `(archived)`, log it).
    - Standard frontmatter:
      ```yaml
      ---

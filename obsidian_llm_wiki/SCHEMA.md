@@ -41,7 +41,7 @@ tags:
   - concept
 sources:
   - raw/articles/source-name.md # optional for purely conceptual/synthesis notes
-confidence: high # high | medium | low (degree of certainty/corroboration)
+confidence: high # high | medium | low (degree of certainty/corroboration); do not use high without support from 2+ sources
 contested: false # set true if unresolved contradictions exist
 contradictions: [] # list of conflicting note slugs, e.g. [legacy-system-spec]
 status: published # published | draft | deprecated
