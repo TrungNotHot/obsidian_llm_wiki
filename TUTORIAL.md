@@ -169,40 +169,34 @@ Không phải tác vụ nào cũng cần model đắt tiền hoặc bật thinki
 
 Skill chỉ là file Markdown (`.claude/skills/<tên>/SKILL.md`, bản sao ở `.agents/skills/`), còn script dùng chung nằm ở `.claude/scripts/` và `.agents/scripts/`, nên bạn có thể **nhờ LLM sửa trực tiếp** để đổi hành vi, không cần code.
 
-**Luồng tra cứu của `/kb-ask` và `/kb-report`** gồm 3 bước:
-1. **Chọn seed (note xuất phát)**: AI tự phân tích câu hỏi, xác định các khái niệm liên quan (kể cả khái niệm ngầm hoặc rộng hơn), rồi chọn các mục phù hợp nhất trong `index.md` và README của từng thư mục. Grep `title:`/`tags:` chỉ để xác nhận hoặc bổ sung.
-2. **Outline (tầng 1)**: script `outline.py` đi từ seed qua link và backlink trong số hop cho phép, in ra mỗi note một khối gồm `title`, `tags`, `confidence` (từ frontmatter) và toàn bộ heading `#` trong thân bài. AI đọc outline này rồi tự chọn note liên quan, script không chấm điểm.
-3. **Đọc đầy đủ (tầng 2)**: AI đọc nguyên văn các note đã chọn, trong hạn mức ở bảng dưới. Chỉ mở `raw/` (theo `sources:`) khi wiki thiếu chi tiết.
+**Luồng tra cứu của `/kb-ask` và `/kb-report`** gọn, theo thứ tự:
+1. **Tìm note liên quan**: AI đọc `index.md` (file lớn thì đọc phần liên quan hoặc grep), tự phân tích câu hỏi và chọn các mục phù hợp nhất bằng phán đoán. Chỉ đọc README thư mục khi index chưa phủ chủ đề. Nếu catalog không có mục khớp, hoặc trước khi kết luận wiki thiếu, AI grep từ khóa (kèm từ đồng nghĩa) trên `wiki/` và `reports/`.
+2. **Đọc**: AI đọc đầy đủ các note liên quan nhất rồi dừng khi đã đủ trả lời (`/kb-ask` thường 3-8 note, nếu cần hơn khoảng 12 thì gợi ý chuyển `/kb-report`; `/kb-report` thường 8-15 note). Chỉ theo `[[wikilink]]` khi nó dẫn tới thứ câu trả lời cần. Mở `contradictions:` và `sources:` (`raw/`) khi cần.
+3. **Tùy chọn, mở rộng theo link**: khi câu hỏi về quan hệ giữa các note, hoặc catalog không phủ chủ đề, AI chạy `outline.py` để xem hàng xóm (link và backlink) của các note đã đọc, gồm `title`, `tags`, `confidence` và toàn bộ heading; AI tự chọn note đáng đọc, script không chấm điểm.
+4. **Chỉ `/kb-report`: đối chiếu code** khi wiki mô tả hành vi đã được cài đặt (DAG, SQL, config), ghi các chỗ tài liệu lệch code vào một mục riêng của báo cáo.
 
-Chất lượng kết quả phụ thuộc nhiều vào bước 1: hop chỉ mở rộng quanh seed, nên seed sai thì note đúng không vào được outline. Vì vậy `index.md` và README các thư mục cần có mô tả rõ ràng (chạy `/kb-index` khi wiki thay đổi).
+Chất lượng phụ thuộc nhiều vào bước 1, nên `index.md` cần mô tả rõ ràng từng mục (chạy `/kb-index` khi wiki thay đổi).
 
-**Số hop** là số lần "nhảy" qua `[[wikilink]]` từ seed khi tra cứu. Mặc định theo loại câu hỏi:
-
-| Loại câu hỏi | `/kb-ask` | `/kb-report` |
-|---|---|---|
-| Tra cứu một sự kiện (fact lookup) | 1 hop | 1 hop |
-| Quan hệ giữa các note, tóm tắt | 2 hops | 2 hops |
-| Suy luận nhiều bước (multi-hop) | Không dùng (gợi ý chuyển `/kb-report`) | 3 hops |
+**Số hop** (chỉ áp dụng ở bước 3) là số lần "nhảy" qua `[[wikilink]]` từ các note đã đọc. Mặc định 1 hop; 2 hop cho quan hệ hoặc tóm tắt; 3 hop (chỉ `/kb-report`) cho chuỗi suy luận qua từ 3 note. Hop càng cao càng tốn token và dễ đọc lan sang note ít liên quan.
 
 Muốn đổi, ra lệnh cho LLM, ví dụ:
 ```text
-Sửa skill kb-ask: cho phép tối đa 3 hop với câu hỏi multi-hop.
-Sửa skill kb-report: fact lookup chỉ 1 hop, các loại khác tối đa 2 hop.
+Sửa skill kb-report: luôn dùng outline.py với 2 hop.
+Sửa skill kb-ask: không dùng outline.py, chỉ đọc index và grep.
 ```
-Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/` để không lệch nhau. Hop càng cao càng tốn token và dễ đọc lan sang note ít liên quan.
+Nhớ yêu cầu sửa **cả hai bản** `.claude/skills/` và `.agents/skills/` để không lệch nhau.
 
 **Các giá trị cấu hình khác có thể nhờ LLM đổi** (ghi rõ file cần sửa; nếu một giá trị xuất hiện ở nhiều file thì phải đổi đủ để không lệch):
 
 | Cấu hình | Mặc định | Nằm ở đâu |
 |---|---|---|
-| Số note đọc đầy đủ tối đa (`/kb-ask`), không tính các seed đã đọc ở bước 1 | `số hop × min(5 + số seed, 12)`: 6 / 12 note với 1 seed, tối đa 12 / 24 với từ 7 seed | `kb-ask/SKILL.md` |
-| Số note đọc đầy đủ tối đa (`/kb-report`), không tính các seed đã đọc ở bước 1 | `số hop × min(5 + số seed, 12)`: 6 / 12 / 18 note với 1 seed, tối đa 12 / 24 / 36 với từ 7 seed | `kb-report/SKILL.md` |
-| Số ứng viên outline in ra tối đa (`--limit`) | Mặc định theo hop: 20 / 40 / 60 cho 1 / 2 / 3 hop; khi bị cắt và mọi seed đều cần thì AI nâng `--limit` (tối đa 100, hằng `MAX_LIMIT`) | hàm `default_limit()` và hằng `MAX_LIMIT` trong `.claude/scripts/outline.py` và `.agents/scripts/outline.py`, `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
-| Khi nào grep (kèm từ đồng nghĩa) toàn bộ `wiki/` và `reports/` làm lưới an toàn khi chọn seed | Trước khi kết luận wiki thiếu, hoặc khi mô tả trong catalog quá thô để đánh giá | `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
+| Số note đọc đầy đủ (mức tham khảo, không phải hạn mức cứng) | `/kb-ask` 3-8 note (trên khoảng 12 thì chuyển `/kb-report`); `/kb-report` 8-15 note | `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
+| Số ứng viên `outline.py` in ra tối đa (`--limit`) | Mặc định theo hop: 20 / 40 / 60 cho 1 / 2 / 3 hop; khi bị cắt thì thu hẹp `--seeds` hoặc nâng `--limit` (tối đa 100, hằng `MAX_LIMIT`) | hàm `default_limit()` và hằng `MAX_LIMIT` trong `.claude/scripts/outline.py` và `.agents/scripts/outline.py` |
+| Khi nào grep (kèm từ đồng nghĩa) toàn bộ `wiki/` và `reports/` | Khi catalog không có mục khớp, hoặc trước khi kết luận wiki thiếu | `kb-ask/SKILL.md`, `kb-report/SKILL.md` |
 | Có/không cho tìm web, và hỏi trước khi tìm | Chỉ khi wiki thiếu, luôn hỏi trước | `kb-ask/SKILL.md`, `kb-report/SKILL.md`, `CLAUDE.md`/`AGENTS.md` (mục Web Search Policy) |
 | Ngưỡng note "cũ" (stale): "Outdated vs cited source" (trang cũ hơn nguồn nó trích dẫn > 90 ngày) và "Aging candidates" (> 90 ngày kể từ lần cập nhật, chỉ coi là cũ nếu có nguồn mới hơn cùng chủ đề) | > 90 ngày | `kb-health/SKILL.md` **và** `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py` |
-| Ngưỡng tách note quá dài | > 300 dòng | `kb-compile/SKILL.md`, `kb-health/SKILL.md`, `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py`, `SCHEMA.md`, `CLAUDE.md`/`AGENTS.md` |
-| Quy tắc `confidence`: không đặt `high` nếu chưa có từ 2 nguồn | 2 nguồn | `SCHEMA.md`, `kb-compile/SKILL.md`, `kb-report/SKILL.md` (mẫu frontmatter), `check_health.py` (mục "confidence: high with fewer than 2 sources") |
+| Ngưỡng tách note quá dài | > 300 dòng | Nguồn chính là `SCHEMA.md` (các skill, `CLAUDE.md` và `AGENTS.md` chỉ trỏ về đó); riêng `.claude/scripts/check_health.py` và `.agents/scripts/check_health.py` có hằng số riêng nên phải đổi cùng |
+| Quy tắc `confidence`: không đặt `high` nếu chưa có từ 2 nguồn | 2 nguồn | `SCHEMA.md`, `kb-compile/SKILL.md`, `kb-report/SKILL.md`, `check_health.py` (mục "confidence: high with fewer than 2 sources") |
 | Điều kiện tạo note mới | Khái niệm xuất hiện trong ≥ 2 nguồn | `kb-compile/SKILL.md`, `SCHEMA.md` |
 | Số link ra tối thiểu mỗi note | 2 | `SCHEMA.md`, `CLAUDE.md` |
 | Xoay vòng `log.md` | Khi quá 500 mục | `kb-health/SKILL.md`, `SCHEMA.md` |

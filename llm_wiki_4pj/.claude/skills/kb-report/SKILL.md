@@ -10,7 +10,7 @@ Given a question or investigation topic, searches the knowledge wiki and codebas
 ## Purpose
 Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Always Answer in Files"**. Every serious question becomes a permanent compounding asset in your vault.
 
-> Refer to `references/wiki-guidelines.md` for report formatting standards, wikilink syntax, and core vault principles.
+> Refer to `.claude/references/wiki-guidelines.md` for report formatting standards, wikilink syntax, and core vault principles.
 
 ## Workflow Steps:
 
@@ -19,13 +19,10 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
    - Scan the last 20 lines of `docs/log.md` to see recent queries or investigations.
 
 2. **Step 1 — Search & Read Context**:
-   - Find seed notes: analyze the question yourself, identify the concepts it involves (including implied, broader or related ones), and pick the best-covering entries from `docs/index.md` and the folder `README.md` catalogs (`docs/wiki/concepts/`, `docs/wiki/entities/`, `docs/wiki/easy_read/`) by judgement. Use grep on `title:`/`tags:` only to confirm or fill gaps, not as the primary selector. Before concluding the wiki lacks something, or when the catalog entries are too coarse to judge, run one keyword grep (with synonyms) across `docs/wiki/` and `docs/reports/` as a safety net.
-   - **Traverse embedded references** (outline first, then full reads):
-     - **Depth by question type**: **1 hop** for a fact lookup, **2 hops** for relationships or summaries, **3 hops** for multi-hop reasoning.
-     - **Level 1 (outline)**: run `python3 .claude/scripts/outline.py docs --seeds <seed-notes> --hops <1|2|3>` (`<seed-notes>` = note file names without `.md`, **comma-separated, no spaces**, e.g. `--seeds note-a,note-b`). It lists every note reachable by links and backlinks within the hop limit (including prior reports in `docs/reports/`) with its title, tags, confidence and ALL headings (no scoring), nearest hop first. Read the outlines and **rerank them yourself** by relevance to the question. The output is capped (default 20 / 40 / 60 notes for 1 / 2 / 3 hops). If it says the list was truncated, rerun adjusting in this order: **1) `--seeds`** (drop weakly related seeds), **2) `--hops`** (only as far as the question type allows), **3) `--limit N`** (hard cap 100) when every seed is needed; outline entries are cheap, the read budget below is what controls cost. If the script fails, fall back to grep + your own judgement.
-     - **Level 2 (full read)**: read in full at most **hops × min(5 + seeds, 12)** notes, where `seeds` = number of notes passed to `--seeds` (e.g. 6 / 12 / 18 with one seed, up to 12 / 24 / 36 with 7+ seeds; the seed notes already read in Step 1 are not counted), the most relevant first; if `candidates` is within the budget, skip the ranking and read them all. Also read the `contradictions:` partners of the notes you read, and open `sources:` files in `docs/raw/` when primary-source detail is needed.
-     - If coverage is still thin, start a new traversal from a newly found seed instead of going deeper. Keep a list of visited notes to cite in the report.
-   - Cross-check with source code in primary codebase directories (e.g. `src/`, `app/`, `lib/`) when code-level verification is needed.
+   - **Find relevant notes**: read `docs/index.md` (if it is large, read the relevant sections or grep it). Analyze the question, identify the concepts it involves (including implied or related ones), and pick the best-matching entries by judgement. Read the folder `README.md` catalogs only if the index does not cover the topic. If no catalog entry matches, or before concluding the wiki lacks something, grep keywords (with synonyms) across `docs/wiki/` and `docs/reports/`.
+   - **Read**: read the relevant notes in full (in parallel), most relevant first, until the topic is covered (typically 8-15 notes; stop earlier when covered). Follow `[[wikilinks]]` that point to something the report needs. Read the `contradictions:` partners of notes you read, and open `sources:` files in `docs/raw/` when primary-source detail is needed. Keep a list of visited notes to cite in the report.
+   - **Optional, expand with links**: when notes you read link to unseen notes that the question needs, or the catalog did not cover the topic, run `python3 .claude/scripts/outline.py docs --seeds a,b --hops <1|2|3>` (`--seeds` = note file names without `.md`, **comma-separated, no spaces**). It lists neighbours (links and backlinks, including prior reports) with title, tags, confidence and all headings; choose the relevant ones yourself. **1 hop** for a fact lookup, **2** for relationships or summaries, **3** only for reasoning chains across 3+ notes. If it reports truncation, narrow `--seeds` or raise `--limit N` (max 100). If it fails, fall back to grep.
+   - **Code cross-check (core step)**: when the wiki describes behavior implemented in code (DAGs, SQL, config), verify it against the real code in the primary codebase directories (e.g. `src/`, `app/`, `lib/`, `dags/`, `include/`) and record doc/code discrepancies. Skip only if the vault has no codebase.
    - **Web search (when wiki lacks enough info)**: ASK the user for permission first, stating what is missing. Never search silently. If approved, cite every web-sourced claim with its URL in the report and label it as unverified (not yet in `docs/raw/`); set `confidence: medium` or lower.
 
 3. **Step 2 — Synthesize & Author Report**:
@@ -34,6 +31,7 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
    - Structure the report:
      - **Executive Summary**: 2-3 sentence high-level takeaway.
      - **Detailed Technical Analysis**: Technical breakdown, interfaces, data models, or logic flow.
+     - **Code Cross-check** (when code was checked): each doc/code discrepancy found, with the file and what differs.
      - **Mermaid Diagrams**: Visual architecture, sequence, or ER diagrams.
      - **Backlinks & References**: Obsidian wikilinks `[[...]]` connecting to relevant concept notes and entities.
      - **External Sources (required if any web/external info was used)**: a dedicated section listing each external source: URL/site, search query used, access date, and which report claims depend on it. Mark them unverified (not in `docs/raw/`). Omit the section only if no external info was used.

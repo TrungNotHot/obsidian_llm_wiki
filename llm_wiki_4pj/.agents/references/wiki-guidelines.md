@@ -25,24 +25,7 @@ Obsidian is the viewer/IDE; you are the compiler and programmer; markdown files 
 
 ## 3. Wikilink Syntax & Frontmatter Standard
 - Always use `[[NoteName]]` or `[[Folder/NoteName|Display Name]]`.
-- Add YAML frontmatter to newly generated knowledge pages:
-  ```yaml
-  ---
-  title: "Page Title"
-  created: YYYY-MM-DD
-  updated: YYYY-MM-DD
-  type: concept | entity | comparison | query | report | architecture
-  tags:
-    - architecture
-    - <domain-tag>
-  sources:
-    - docs/raw/... # optional
-  confidence: high # high | medium | low
-  contested: false # true if conflicting with another note
-  contradictions: [] # [slug-of-conflicting-note]
-  status: published
-  ---
-  ```
+- Frontmatter: follow the Frontmatter Schema in `docs/SCHEMA.md` (single source of truth; do not copy it here).
 
 ## 4. Canonical Skills
 - `/kb-compile`: Ingests sources (local or URL), summarizes, and creates/updates pages in `docs/wiki/`.

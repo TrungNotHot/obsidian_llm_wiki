@@ -10,7 +10,7 @@ Rebuilds `index.md`, organizes glossary terms, and regenerates knowledge navigat
 ## Purpose
 Ensures that as the wiki grows, developers and AI agents can always navigate the entire vault through a unified, self-updating master catalog without requiring complex vector infrastructure.
 
-> Refer to `references/wiki-guidelines.md` for standard directory conventions and catalog organization.
+> Refer to `.claude/references/wiki-guidelines.md` for standard directory conventions and catalog organization.
 
 ## Workflow Steps:
 
@@ -33,6 +33,8 @@ Ensures that as the wiki grows, developers and AI agents can always navigate the
    - Compare the rebuilt catalog with the current `index.md`: count entries **added**, **removed** and **changed**, and reuse existing hand-written summaries instead of rewriting them.
    - If any entry is **removed**, or **10 or more** entries are added/changed, show the user this summary (with the removed entries) and **ask for confirmation before writing**.
    - If only a few notes changed, edit the affected entries in place instead of regenerating the whole file.
+
+3c. **Scale rules**: apply the "Index Scaling & Log Rotation" rules in `SCHEMA.md` (split sections over 50 entries; add a topic map above 200 entries).
 
 4. **Log the Operation**:
    - Append to `log.md`:

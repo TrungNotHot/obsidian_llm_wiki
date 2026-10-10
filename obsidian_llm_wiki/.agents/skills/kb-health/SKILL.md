@@ -10,7 +10,7 @@ Runs linting checks across the knowledge vault and codebase, identifies gaps, in
 ## Purpose
 Maintains high integrity and low chaos across living documentation. Ensures source code across primary codebase directories (e.g. `src/`, `app/`, `lib/`, `dags/`) never drifts out of sync with documentation in `wiki/`.
 
-> Follow vault integrity rules, directory conventions, and auditing standards defined in `references/wiki-guidelines.md`.
+> Follow vault integrity rules, directory conventions, and auditing standards defined in `.agents/references/wiki-guidelines.md`.
 
 ## Workflow Steps:
 
@@ -28,7 +28,7 @@ Maintains high integrity and low chaos across living documentation. Ensures sour
      - **Index completeness**: "Not in index.md" lists wiki pages missing from `index.md`.
      - **Frontmatter and taxonomy**: "Missing frontmatter fields" (required: `title, created, updated, type, tags`) and "Tags outside SCHEMA.md taxonomy".
      - **Source drift**: "Source drift" lists `raw/` files whose body no longer matches the stored `sha256` (raw/ is immutable).
-     - Check "Outdated vs cited source" (page `updated` is >90 days older than a raw source it cites: likely stale) and "Aging candidates" (>90 days since update). Age alone is not staleness: report an aging note as stale only if a newer source or note on the same entities exists. Check oversized pages (>300 lines, `wiki/` notes only; `raw/` and `reports/` are not split).
+     - Check "Outdated vs cited source" (page `updated` is >90 days older than a raw source it cites: likely stale) and "Aging candidates" (>90 days since update). Age alone is not staleness: report an aging note as stale only if a newer source or note on the same entities exists. Check oversized pages (above the `SCHEMA.md` split threshold, `wiki/` notes only; `raw/` and `reports/` are not split).
    - The script is fast but blind to semantic issues — it NEVER replaces Layer 2 below.
   - **Clipper author-link policy**: Obsidian Web Clipper writes `author: "[[name]]"` wikilinks in `raw/` frontmatter. These are never real links — normalize to plain text (`author: "name"`) on sight without asking. The script already excludes frontmatter from link scanning, so this is a silent normalization, not a broken-link fix.
 

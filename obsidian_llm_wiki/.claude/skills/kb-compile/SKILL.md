@@ -10,7 +10,7 @@ Ingests new sources (local files in `raw/` or direct URLs), extracts atomic conc
 ## Purpose
 Acts as the automated librarian and compiler for incoming information (web articles, API specs, design documents, research notes). Ensures the knowledge base compounds over time without duplicate pages or unflagged contradictions.
 
-> Governed by `SCHEMA.md` and `references/wiki-guidelines.md`.
+> Governed by `SCHEMA.md` and `.claude/references/wiki-guidelines.md`.
 
 ## Workflow Steps:
 
@@ -29,7 +29,7 @@ Acts as the automated librarian and compiler for incoming information (web artic
        ```
      - The script automatically handles SHA-256 caching, prevents duplicate conversion, and outputs to `raw/articles/<slug>.md`.
      - Read the generated `raw/articles/<slug>.md` in full to proceed with distillation.
-   - **If a URL is provided**: Fetch the page as clean markdown with your web-fetch tool (e.g. `WebFetch` in Claude Code; other agents use their own URL-reading tool).
+   - **If a URL is provided**: Fetch the page as clean markdown with `WebFetch`.
      - Compute the `sha256` hash of the content body.
      - If the file already exists in `raw/articles/`, compare the new hash with the stored `sha256`:
        - *Identical*: Skip re-compiling (source unchanged, saving tokens).
@@ -47,8 +47,8 @@ Acts as the automated librarian and compiler for incoming information (web artic
 3. **Step 3 — Distill & Check Thresholds**:
    - Identify core concepts, entities, architectural patterns, and business rules.
    - **Page Thresholds** (per `SCHEMA.md`): Only create a dedicated page if an entity/concept appears in $\ge 2$ sources OR is central to this source. Avoid creating clutter for passing mentions.
-   - For pages reaching >300 lines, decompose into sub-topics.
-   - **Find related existing pages (before creating or editing)**: a miss here silently causes duplicate pages or missed contradictions, so use **both** methods and take the **union**: (a) analyze the source yourself, list the concepts/entities it covers (including broader or related ones), and pick the matching entries from `index.md` and the folder `README.md` catalogs by judgement; (b) safety net: grep `wiki/` for each candidate name, its synonyms, and `tags:`/`title:` in frontmatter (mandatory when the wiki has about 100+ notes or the catalogs have no matching entry). Read the matches. For each page you will edit, run `python3 .claude/scripts/outline.py . --seeds <those-pages> --hops 1` to see the pages it links to and from (contradictions, link targets). Update an existing page instead of creating a near-duplicate. If this finds **10 or more** affected pages, apply the Mass-Update Guardrail below.
+   - For pages above the split threshold in `SCHEMA.md`, decompose into sub-topics.
+   - **Find related existing pages (before creating or editing)**: read `index.md` (if it is large, read the relevant sections or grep it) and pick the entries matching the concepts/entities in the source (including broader or related ones) by judgement; read the folder `README.md` catalogs only if the index is not enough. Before creating a new page, grep `wiki/` for its name and synonyms: a miss here silently causes duplicate pages or missed contradictions. Read the matches. For a page you will edit, you may run `python3 .claude/scripts/outline.py . --seeds <those-pages> --hops 1` (note names without `.md`, comma-separated, no spaces) to see the pages it links to and from. Update an existing page instead of creating a near-duplicate. If this finds **10 or more** affected pages, apply the Mass-Update Guardrail below.
    - **Mass-Update Guardrail**: If the planned ingestion will touch **10 or more** existing wiki pages, summarize the affected notes and confirm the update scope with the user before applying edits.
 
 4. **Step 4 — Update or Create Pages with Contradiction Handling**:
