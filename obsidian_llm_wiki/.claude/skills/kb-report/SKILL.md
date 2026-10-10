@@ -19,8 +19,8 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
    - Read the last 5 entries of `log.md` to see recent queries or investigations.
 
 2. **Step 1 — Search & Read Context**:
-   - **Find relevant notes**: use the `index.md` you read in Step 0 (if it is large, read the relevant sections or grep it). Analyze the question, identify the concepts it involves (including implied or related ones), and pick the best-matching entries by judgement. If no catalog entry matches, or before concluding the wiki lacks something, grep keywords (with synonyms) across `wiki/` and `reports/`.
-   - **Read**: read the relevant notes in full (in parallel), most relevant first, until the topic is covered (typically 8-15 notes; stop earlier when covered). Follow `[[wikilinks]]` that point to something the report needs. Read the `contradictions:` partners of notes you read, and open `sources:` files in `raw/` when primary-source detail is needed. Keep a list of visited notes to cite in the report.
+   - **Find relevant notes**: use the `index.md` you read in Step 0 (if it is large, over ~150 lines, read the relevant sections or grep it; it lists notes by name only, so find a note's file with `find wiki -name '<NoteName>.md'`). Analyze the question, identify the concepts it involves (including implied or related ones), and pick the best-matching entries by judgement. If no catalog entry matches, or before concluding the wiki lacks something, grep keywords (with synonyms) across `wiki/` and `reports/`.
+   - **Read**: read the relevant notes in full (in parallel), most relevant first, until the topic is covered (typically 8-15 notes; stop earlier when covered). If the catalog yields more candidates than you can read, read in full the notes that define the mechanisms the question asks about first; for a long note where you need only one section, read just that section. Follow `[[wikilinks]]` that point to something the report needs. Read the `contradictions:` partners of notes you read, and open `sources:` files in `raw/` when primary-source detail is needed. Keep a list of visited notes to cite in the report.
    - **Optional, expand with links**: when notes you read link to unseen notes that the question needs, or the catalog did not cover the topic, run `python3 .claude/scripts/outline.py . --seeds a,b --hops <1|2|3>` (`--seeds` = note file names without `.md`, **comma-separated, no spaces**). It lists neighbours (links and backlinks, including prior reports) with title, tags, confidence and all headings; choose the relevant ones yourself. **1 hop** for a fact lookup, **2** for relationships or summaries, **3** only for reasoning chains across 3+ notes. If it reports truncation, narrow `--seeds` or raise `--limit N` (max 100). If it fails, fall back to grep.
    - **Code cross-check (core step)**: when the wiki describes behavior implemented in code (DAGs, SQL, config), verify it against the real code in the primary codebase directories (e.g. `src/`, `app/`, `lib/`, `dags/`, `include/`) and record doc/code discrepancies. Skip only if the vault has no codebase.
    - **Web search (when wiki lacks enough info)**: ASK the user for permission first, stating what is missing. Never search silently. If approved, cite every web-sourced claim with its URL in the report and label it as unverified (not yet in `raw/`); set `confidence: medium` or lower.
@@ -28,11 +28,13 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
 3. **Step 2 — Synthesize & Author Report**:
    - **Prior report on the same question?** If a report in `reports/` already answers the same question, update it (set `updated:`, log it as `Report | <Title> (updated)`) instead of creating a new file. If it only covers a nearby topic, create a new report and cite the old one.
    - Otherwise create a new report file: `reports/YYYY-MM-DD-<topic_slug>.md`.
+   - Write the report in the language of the question unless the user asks otherwise.
    - Frontmatter follows the **Frontmatter Schema in `SCHEMA.md`** (single source of truth: fill every required field it lists, do not rely on a copy here). Report-specific: `type: report`, `tags` include `report` plus a domain tag from the taxonomy, `sources:` lists the wiki/raw notes the report relied on, `confidence` is not `high` unless backed by 2+ sources.
    - Structure the report:
      - **Executive Summary**: 2-3 sentence high-level takeaway.
      - **Detailed Technical Analysis**: Technical breakdown, interfaces, data models, or logic flow.
      - **Code Cross-check** (when code was checked): each doc/code discrepancy found, with the file and what differs.
+     - **Not reviewed** (if any): candidate notes you did not read, so the reader knows the coverage limits.
      - **Mermaid Diagrams**: Visual architecture, sequence, or ER diagrams.
      - **Backlinks & References**: Obsidian wikilinks `[[...]]` connecting to relevant concept notes and entities.
      - **External Sources (required if any web/external info was used)**: a dedicated section listing each external source: URL/site, search query used, access date, and which report claims depend on it. Mark them unverified (not in `raw/`). Omit the section only if no external info was used.
@@ -45,7 +47,7 @@ Enforces the core Karpathy / `@polydao` principle: **"Never Answer in Chat, Alwa
      - Link the report to this atomic note and vice-versa.
 
 5. **Step 4 — Update Catalog & Log**:
-   - Add the report link to `index.md` under the Reports section.
+   - Add the report link to `index.md` in the section that lists reports.
    - Append to `log.md`:
      ```markdown
      ## [YYYY-MM-DD] Report | <Report Title>
