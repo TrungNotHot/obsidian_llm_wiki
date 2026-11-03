@@ -97,6 +97,18 @@ cd obsidian_llm_wiki/llm_wiki_4pj
 
 ---
 
+## 🕸️ Optional: Graphify code graph
+
+[Graphify](https://github.com/Graphify-Labs/graphify) builds a local code graph from the AST (no API key): `uv tool install graphifyy`, then from the project root `graphify extract . --code-only --out .`. Output goes to `graphify-out/` (gitignored). `setup.sh` copies `.graphifyignore` (excludes `docs/`, `.claude/`, `.agents/`) and adds `graphify-out/` to the target `.gitignore`.
+
+The graph is **not** copied into the vault: the wiki holds meaning and design decisions, the graph holds code structure. They only meet where skills read the graph:
+- `/kb-report` uses `graphify query` as a hint to find code files, then confirms with grep.
+- `/kb-health` lists "Code drift candidates" (AST classes with no entity page in `docs/wiki/entities/local/`) when `graph.json` exists. Function-only repos will always show none.
+
+Re-run the `extract` command after code changes to keep the graph fresh. Without `graphify-out/`, skills fall back to grep and the health check skips this section.
+
+---
+
 ## ⚙️ Project Customization (Only 2 Minutes)
 
 Once scaffolded into a new project, you only need to customize **Part 2** of `docs/SCHEMA.md`:

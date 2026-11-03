@@ -11,6 +11,7 @@ Obsidian is the viewer/IDE; you are the compiler and programmer; markdown files 
 - **Living Documentation**: Maintain active system architecture and design notes inside `docs/wiki/`, keeping them synchronized with codebase changes.
 - **Explicit Conflict Management**: Never silently overwrite conflicting claims. Note contradictions with dates/sources, and flag `contested: true` per `docs/SCHEMA.md`.
 - **Mass-Update Guardrail**: Always confirm with the user before applying edits if an ingestion or refactor touches 10 or more existing pages.
+- **Code Graph Stays Outside the Vault**: if Graphify is used, `graphify-out/` (graph.json, reports) is a code-only lookup aid. Never copy it into `docs/`, and never let it override the wiki or the code: use it as a hint, then confirm in the real files.
 - **Log Rotation**: When `docs/log.md` exceeds 500 entries, rotate to `docs/log-YYYY.md` and start fresh.
 
 ## 2. Directory Conventions

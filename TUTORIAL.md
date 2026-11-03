@@ -70,6 +70,16 @@ Mở terminal tại thư mục gốc của dự án code và gọi các lệnh s
 
 Với tính năng lớn, cách bài bản hơn là thả spec/thiết kế vào `docs/raw/superpowers/specs/` rồi chạy `/kb-compile`: wiki vừa có ngữ cảnh thiết kế (vì sao làm vậy), vừa được đối chiếu với code.
 
+### 4. Tùy chọn: Graphify (đồ thị code, nằm ngoài vault)
+
+[Graphify](https://github.com/Graphify-Labs/graphify) dựng đồ thị lớp/hàm của code bằng AST ở máy (không cần API key): `uv tool install graphifyy`, rồi từ gốc dự án chạy `graphify extract . --code-only --out .`. Kết quả nằm trong `graphify-out/` (đã gitignore). `setup.sh` chép sẵn `.graphifyignore` (loại `docs/`, `.claude/`, `.agents/`) và thêm `graphify-out/` vào `.gitignore`.
+
+Graph **không** được chép vào vault: wiki giữ ý nghĩa và quyết định thiết kế, graph chỉ giữ cấu trúc code. Hai thứ chỉ gặp nhau ở chỗ skill đọc graph:
+- `/kb-report` dùng `graphify query` làm gợi ý để tìm file code, sau đó vẫn grep xác nhận.
+- `/kb-health` liệt kê "Code drift candidates" (class trong code chưa có entity trong `docs/wiki/entities/local/`) khi có `graph.json`. Repo thuần hàm (không class) sẽ luôn trống.
+
+Chạy lại lệnh `extract` khi code đổi để graph không bị cũ. Không có `graphify-out/` thì skill dùng grep như cũ và `/kb-health` bỏ qua mục này.
+
 ---
 
 ## Phần 2: Dùng `obsidian_llm_wiki` (Kho tri thức trung tâm)

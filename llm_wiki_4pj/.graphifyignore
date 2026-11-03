@@ -1,0 +1,6 @@
+# Ignore LLM Wiki & Obsidian folders to prevent graph pollution and save tokens
+docs/
+.obsidian/
+graphify-out/
+.claude/
+.agents/

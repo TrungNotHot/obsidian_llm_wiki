@@ -40,6 +40,12 @@ if [ -f "$SCRIPT_DIR/AGENTS.md" ] && [ ! -f "$TARGET_DIR/AGENTS.md" ]; then
     cp "$SCRIPT_DIR/AGENTS.md" "$TARGET_DIR/AGENTS.md"
 fi
 
+# 1d. Graphify ignore rules (keeps docs/, .claude/, .agents/ out of the code graph)
+if [ -f "$SCRIPT_DIR/.graphifyignore" ] && [ ! -f "$TARGET_DIR/.graphifyignore" ]; then
+    echo "🕸️  Copying .graphifyignore..."
+    cp "$SCRIPT_DIR/.graphifyignore" "$TARGET_DIR/.graphifyignore"
+fi
+
 # 2. Copy docs directory (Vault scaffold)
 echo "📚 Copying docs/ (Constitutional schema, index, concepts, entities)..."
 mkdir -p "$TARGET_DIR/docs"
@@ -72,6 +78,10 @@ docs/.obsidian/workspace.json
 docs/.obsidian/workspace-mobile.json
 EOF
     fi
+fi
+
+if [ -f "$TARGET_DIR/.gitignore" ] && ! grep -qx "graphify-out/" "$TARGET_DIR/.gitignore"; then
+    printf '\n# Graphify output (regenerable code graph)\ngraphify-out/\n' >> "$TARGET_DIR/.gitignore"
 fi
 
 echo ""

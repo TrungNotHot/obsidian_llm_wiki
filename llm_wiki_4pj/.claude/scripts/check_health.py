@@ -132,7 +132,44 @@ def audit_vault(vault_path: Path):
         "outdated_vs_source": outdated_vs_source,
     }
     result.update(mechanical_checks(vault_path, md_files))
+    result["code_drift"] = code_drift(vault_path)
     return result
+
+
+def _norm(name):
+    # PascalCase / snake_case / kebab-case / "Title Case" all collapse to the same key
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def code_drift(vault_path):
+    """AST classes from graphify-out/graph.json with no entity page in wiki/entities/local/.
+
+    Returns None when graphify has not been run (the check is optional). Graph nodes carry no
+    Class/Module/Service type, so a class is: code node, callable, bare identifier label
+    (functions end in `()`, methods start with `.`, files have an extension).
+    """
+    graph = next((g for g in (vault_path.parent / "graphify-out" / "graph.json",
+                              vault_path / "graphify-out" / "graph.json") if g.is_file()), None)
+    if graph is None:
+        return None
+    try:
+        data = json.loads(graph.read_text(encoding="utf-8"))
+        nodes, edges = data["nodes"], data.get("links") or data.get("edges") or []
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    degree = {}
+    for e in edges:
+        for end in (e.get("source"), e.get("target")):
+            degree[end] = degree.get(end, 0) + 1
+    entities_dir = vault_path / "wiki" / "entities" / "local"
+    have = {_norm(f.stem) for f in entities_dir.rglob("*.md")} if entities_dir.is_dir() else set()
+    missing = [
+        {"class": n["label"], "file": n.get("source_file", ""), "degree": degree.get(n["id"], 0)}
+        for n in nodes
+        if n.get("file_type") == "code" and n.get("_callable") and n.get("type") != "external"
+        and re.fullmatch(r"[A-Za-z_]\w*", n.get("label", "")) and _norm(n["label"]) not in have
+    ]
+    return sorted(missing, key=lambda m: -m["degree"])  # ponytail: classes only; hubs first, modules/services not mapped
 
 
 REQUIRED_FM = ("title", "created", "updated", "type", "tags")
@@ -288,6 +325,8 @@ def main():
     section("Not in index.md", result["missing_in_index"], str, "no index.md")
     section("Missing frontmatter fields", result["frontmatter_missing"], lambda x: f"{x['file']}: {', '.join(x['missing'])}")
     section("Tags outside SCHEMA.md taxonomy", result["unknown_tags"], lambda x: f"{x['file']}: {', '.join(x['tags'])}", "taxonomy not found in SCHEMA.md")
+    section("Code drift candidates (AST classes missing wiki entities)", result["code_drift"],
+            lambda x: f"{x['class']} ({x['file']}, degree {x['degree']})", "no graphify-out/graph.json; run `graphify extract <src> --code-only --out .`")
     section("Source drift (raw/ body != stored sha256)", result["source_drift"], str)
     section("confidence: high with fewer than 2 sources", result["high_single_source"], str)
     section("confidence: low", result["low_confidence"], str)
