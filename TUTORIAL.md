@@ -72,13 +72,50 @@ Với tính năng lớn, cách bài bản hơn là thả spec/thiết kế vào 
 
 ### 4. Tùy chọn: Graphify (đồ thị code, nằm ngoài vault)
 
-[Graphify](https://github.com/Graphify-Labs/graphify) dựng đồ thị lớp/hàm của code bằng AST ở máy (không cần API key): `uv tool install graphifyy`, rồi từ gốc dự án chạy `graphify extract . --code-only --out .`. Kết quả nằm trong `graphify-out/` (đã gitignore). `setup.sh` chép sẵn `.graphifyignore` (loại `docs/`, `.claude/`, `.agents/`) và thêm `graphify-out/` vào `.gitignore`.
+[Graphify](https://github.com/Graphify-Labs/graphify) parse code bằng AST ở máy (không cần API key) và dựng đồ thị hàm/class/file cùng quan hệ gọi nhau. Nó **không thay wiki**: wiki giữ ý nghĩa và quyết định thiết kế, graph chỉ giữ cấu trúc code, nên graph **không** được chép vào `docs/`. Skill chỉ đọc graph để hỗ trợ:
+- `/kb-report` dùng `graphify query` làm gợi ý tìm file code, rồi vẫn grep xác nhận.
+- `/kb-health` liệt kê "Code drift candidates": class trong code chưa có entity trong `docs/wiki/entities/local/`. Repo thuần hàm (không có class) sẽ luôn trống.
 
-Graph **không** được chép vào vault: wiki giữ ý nghĩa và quyết định thiết kế, graph chỉ giữ cấu trúc code. Hai thứ chỉ gặp nhau ở chỗ skill đọc graph:
-- `/kb-report` dùng `graphify query` làm gợi ý để tìm file code, sau đó vẫn grep xác nhận.
-- `/kb-health` liệt kê "Code drift candidates" (class trong code chưa có entity trong `docs/wiki/entities/local/`) khi có `graph.json`. Repo thuần hàm (không class) sẽ luôn trống.
+Lợi ích thực tế khá khiêm tốn (ít lệnh và ít thời gian hơn grep, độ đủ file tương đương), nên coi đây là tùy chọn, không bắt buộc.
 
-Chạy lại lệnh `extract` khi code đổi để graph không bị cũ. Không có `graphify-out/` thì skill dùng grep như cũ và `/kb-health` bỏ qua mục này.
+**Các bước nên chạy (theo thứ tự):**
+
+1. **Cài Graphify (1 lần cho cả máy):**
+   ```bash
+   uv tool install graphifyy            # lưu ý hai chữ y
+   uv tool install "graphifyy[sql]"     # thay lệnh trên nếu repo có file .sql
+   ```
+   Không cần chạy `graphify install` hay `graphify claude install`: lệnh thứ hai ghi vào `CLAUDE.md` và cài hook, xung đột với bộ khung này.
+
+2. **Cài khung wiki vào dự án** (nếu chưa có): chạy `./setup.sh /duong-dan/toi/du-an` như mục 1. Script chép `.graphifyignore` (loại `docs/`, `.claude/`, `.agents/`, `.obsidian/`, `graphify-out/`) và thêm `graphify-out/` vào `.gitignore`. Dự án đã cài từ trước thì chạy lại `setup.sh` (không ghi đè file đang có) và cập nhật skill theo mục "Cập nhật skill cho dự án đã cài".
+
+3. **Chỉnh `.graphifyignore` cho dự án** (làm tay, rất nên làm): thêm những thư mục không phải code kiến trúc để graph không đầy nhiễu, ví dụ `tests/`, `deploy/`, `data/`, `logs/`, `docker-compose*.yaml`, `uv.lock`. Graphify cũng tôn trọng `.gitignore`. Ở hr-scorecard việc này giảm graph từ 1104 xuống 499 node.
+
+4. **Quét code** (từ gốc dự án):
+   ```bash
+   graphify extract . --code-only --out .
+   ```
+   - `--code-only`: chỉ parse code ở máy, không gọi LLM.
+   - `--out .`: bắt buộc, để `graphify-out/graph.json` nằm ở gốc dự án (nơi `/kb-health` tìm). Nếu code nằm trong `src/`, dùng `graphify extract src/ --code-only --out .`.
+   - Cuối lệnh in số node/edge. Nếu có cảnh báo thiếu `tree_sitter_sql`, làm lại bước 1 với `[sql]`.
+
+5. **Xem graph** (tùy chọn): `graphify export html` rồi mở `graphify-out/graph.html` bằng trình duyệt (trên WSL: `explorer.exe "$(wslpath -w graphify-out/graph.html)"`). Xem nhanh trong terminal: `graphify god-nodes --top 10`, `graphify explain "<ten ham>"`, `graphify path "A" "B"`.
+
+6. **Dùng với agent**, không cần lệnh đặc biệt:
+   - `/kb-report <câu hỏi>`: ở bước đối chiếu code, agent tự chạy `graphify query` nếu thấy `graphify-out/`, mở các file nó gợi ý, rồi grep để chắc không bỏ sót (graph có thể thiếu SQL procedure, logging, nơi tiêu thụ ở hạ nguồn). Không có graph thì dùng grep như cũ.
+   - `/kb-health`: script tự thêm mục "Code drift candidates" khi có `graph.json`; agent lọc bớt class nhỏ/nội bộ rồi ghi các mục thật sự thiếu vào `docs/wiki/TODO.md`. Không có graph thì mục này báo "skipped".
+
+7. **Làm mới khi code đổi:** chạy lại lệnh ở bước 4 (tăng dần, không cần LLM). Graph cũ có thể chỉ sai đường, nên làm mới trước khi điều tra hoặc chạy `/kb-health`.
+
+**Lỗi hay gặp:**
+
+| Hiện tượng | Nguyên nhân / cách xử lý |
+|---|---|
+| `/kb-health` báo "skipped (no graphify-out/graph.json)" | Chưa quét, hoặc quên `--out .` nên graph nằm trong `src/graphify-out/`. Quét lại đúng lệnh bước 4 |
+| `graphify query` thoát mã 4 | Không node nào khớp; đổi từ khóa (tên hàm, tên module) hoặc fallback sang grep |
+| Kết quả `query` bị cắt | Mặc định giới hạn 2000 token; thu hẹp từ khóa hoặc dùng `--seed <tên>` thay vì nới `--budget` quá lớn |
+| `graphify update src/` ghi `graphify-out/` vào `src/` | Đừng dùng; chạy lại lệnh `extract` ở bước 4 |
+| Graph có node từ `tests/`, `deploy/`... | Bổ sung `.graphifyignore` (bước 3) rồi quét lại |
 
 ---
 
